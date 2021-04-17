@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Splunk Attack Range on AWS - Guide"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 A quick guide to get [Splunk Attack Range](https://github.com/splunk/attack_range){:target="_blank"} running on AWS. If you're trying to run this locally, I would suggest to have a look over this post [Splunk Attack Range in a virtualized Ubuntu Guest VM](https://medium.com/@julian.wieg/splunk-attack-range-in-a-virtualized-ubuntu-guest-vm-guide-c6587f43c15){:target="_blank"}. 

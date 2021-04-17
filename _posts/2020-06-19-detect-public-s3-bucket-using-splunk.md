@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Detect Public S3 Bucket using Splunk"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 In today's post, we will learn how to detect a public S3 bucket using Splunk. Later, we will see how we can respond to such incidents and even prevent it from happening in the first place. As you will see in the following examples, there are multiple ways to create a S3 bucket and make it public. Also, for this blog, I created some subdomains of [logsec.cloud](https://www.logsec.cloud){:target="_blank"} in [Route53](https://aws.amazon.com/route53/ "AWS Route 53 Documentation"){:target="_blank"}.

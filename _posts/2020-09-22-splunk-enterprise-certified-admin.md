@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Splunk Enterprise Certified Admin Notes"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 I passed my Splunk Enterprise Certified Admin `SPLK 1003` cert on September 11th, 2020. While I have been actively working with Splunk as part of my job,

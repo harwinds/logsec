@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ingest VPC Flow Logs with Additional Meta-Data to Splunk"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk's `profs.conf` file for correct field extraction for the additional VPC flow log fields.  

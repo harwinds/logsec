@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Sending AWS CloudTrail logs to Splunk"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 This blog post will walk you through setting up a Splunk environment on AWS for lab purposes using Splunk Enterprise Free 60-day trail. After 60 days you can convert to a perpetual free license or purchase a Splunk Enterprise license to continue using the expanded functionality designed for enterprise-scale deployments. There is an indexing limit of 500 MB/Day which will be more than enough for our demo purposes.

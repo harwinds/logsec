@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "dnscat2: Command and Control over the DNS"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 No matter how tightly you restrict outbound access from your network, you probably allow DNS protocol to at least one server. Adversaries can abuse this access in your firewall to establish stealthy Command and Control (C2) channels or to exfiltrate data that is difficult to block. To understand the use of DNS for C2 tunneling, let’s take a look at Ron Bowes’s tool [dnscat2](https://github.com/iagox86/dnscat2){:target="_blank"}, which makes it relatively easy to experiment with such attack techniques.

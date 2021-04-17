@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Investigating S3 Scanning Activites on AWS"
-comments: true
+comments: false
 excerpt_separator: <!--more-->
 ---
 During the past week, we detected some suspicious activities across multiple AWS accounts in one of our client's environment. These activites seems related to scanning activities from a bad actor on S3 buckets. One of the sample logs from S3 Access logs:
