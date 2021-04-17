@@ -5,7 +5,7 @@ permalink: /about/
 ---
 
 
-I'm Harwinder Sandhu, a cybersecurity analyst. Purpose of this site is to organize everything I have learned and want to learn in this field, and share those things with others. 
+I'm Harwinder Sandhu, a Cybersecurity Consultant. Purpose of this site is to organize everything I have learned and want to learn in this field, and share those things with others. 
 
 I welcome you to **EXPLORE**, and I hope you find something here worth your time.
 
