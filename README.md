@@ -1,1 +1,1 @@
-Visit [logsec.cloud](https://www.logsec.cloud){:target="_blank"}
+Visit [logsec.cloud](https://www.logsec.cloud)
