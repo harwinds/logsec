@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "AWS CloudTrail Log Analysis with the ELK Stack"
+title: "Investigating CloudTrail Logs using ELK Stack"
 comments: false
 excerpt_separator: <!--more-->
 ---

@@ -47,8 +47,6 @@ end
 
 gem "jekyll-theme-hydejack"
 
-#, path: "./#jekyll-theme-hydejack"
-
 gem 'wdm' if Gem.win_platform?
 gem "tzinfo-data" if Gem.win_platform?
 
