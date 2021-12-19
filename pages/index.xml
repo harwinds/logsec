@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Pages on logsec</title>
+    <link>https://harwinds.github.io/logsec/pages/</link>
+    <description>Recent content in Pages on logsec</description>
+    <image>
+      <url>https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://harwinds.github.io/logsec/pages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Harwinder Sandhu</title>
+      <link>https://harwinds.github.io/logsec/pages/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/pages/about/</guid>
+      <description>Thoughts and ramblings about cybersecurity in a cloudy world.
+Contact Linkedin Profile
+Certifications AWS Certified Security – Specialty
+AWS Certified Solutions Architect – Professional
+AWS Certified Solutions Architect – Associate
+Splunk Enterprise Certified Admin
+Splunk Core Certified Power User
+Splunk Core Certified User
+Check Point Certified Security Expert (CCSE)
+Check Point Certified Security Administrator (CCSA)
+CompTIA Security+
+CompTIA A+
+CCNA Routing and Switching</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on logsec</title>
+    <link>https://harwinds.github.io/logsec/posts/</link>
+    <description>Recent content in Posts on logsec</description>
+    <image>
+      <url>https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</url>
+      <link>https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
+    </image>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 08 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://harwinds.github.io/logsec/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GitHub Workflow Automation Script</title>
+      <link>https://harwinds.github.io/logsec/posts/git-workflow-automation/</link>
+      <pubDate>Wed, 08 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/git-workflow-automation/</guid>
+      <description>A quick blog post to share a bash script that I almost use daily to automate the basic GitHub &amp;ldquo;commit and push&amp;rdquo; prcoess. Steps to reproduce:
+ Create a file, for example codecommit.sh and copy/paste the content below:  #!/bin/bash  RESET=&amp;#34;\033[0m&amp;#34; BOLD=&amp;#34;\033[1m&amp;#34; YELLOW=&amp;#34;\033[38;5;11m&amp;#34; #Get the argument message #read -p &amp;#34;Add Commit message: &amp;#34; message read -p &amp;#34;$(echo -e $BOLD$YELLOW&amp;#34;Add Commit message: &amp;#34;$RESET)&amp;#34; message #Stage all changes git add . #Commit the file(s) git commit -m &amp;#34;$message&amp;#34; echo &amp;#34;Added the commit with message: &amp;#39;$message&amp;#39;&amp;#34; #Get current branch and push changes current_branch=$(git branch --show-current) git push origin &amp;#34;$current_branch&amp;#34; #echo &amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34; echo -e $BOLD$YELLOW&amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34;$RESET  Move it to the location /usr/local/bin to make this shell script global.</description>
+    </item>
+    
+    <item>
+      <title>Investigating CloudTrail Logs using ELK Stack</title>
+      <link>https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/</link>
+      <pubDate>Tue, 20 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/</guid>
+      <description>AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
+You can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.</description>
+    </item>
+    
+    <item>
+      <title>Splunk Attack Range on AWS - Guide</title>
+      <link>https://harwinds.github.io/logsec/posts/splunk-range-setup/</link>
+      <pubDate>Fri, 02 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/splunk-range-setup/</guid>
+      <description>A quick guide to get Splunk Attack Range running on AWS. If you&amp;rsquo;re trying to run this locally, I would suggest to have a look over this post Splunk Attack Range in a virtualized Ubuntu Guest VM.
+It&amp;rsquo;s a tool that allows you to create vulnerable instrumented local or cloud environments to simulate attacks against and collect the data into Splunk. I came across this Splunk post Detecting CVE-2020-1472 and was trying to replicate this in my own environment.</description>
+    </item>
+    
+    <item>
+      <title>Splunk Enterprise Certified Admin Notes</title>
+      <link>https://harwinds.github.io/logsec/posts/splunk-enterprise-certified-admin/</link>
+      <pubDate>Tue, 22 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/splunk-enterprise-certified-admin/</guid>
+      <description>I passed my Splunk Enterprise Certified Admin SPLK 1003 cert on September 11th, 2020. While I have been actively working with Splunk as part of my job, clearing the exam however requires a consistent and well planned effort.
+All these points are taken from the exam blueprint: https://www.splunk.com/pdfs/training/Splunk-Test-Blueprint-Admin-v.1.1.pdf updated with either with Splunk documentation link I studied to prepare for that specific part or youtube video I found useful. Along with these I also bought Udemy Course The Complete Splunk Enterprise Certified Admin Course 2020</description>
+    </item>
+    
+    <item>
+      <title>dnscat2: Command and Control over the DNS</title>
+      <link>https://harwinds.github.io/logsec/posts/dnscat2-demo-on-aws/</link>
+      <pubDate>Sat, 15 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/dnscat2-demo-on-aws/</guid>
+      <description>No matter how tightly you restrict outbound access from your network, you probably allow DNS protocol to at least one server. Adversaries can abuse this access in your firewall to establish stealthy Command and Control (C2) channels or to exfiltrate data that is difficult to block. To understand the use of DNS for C2 tunneling, let’s take a look at Ron Bowes’s tool dnscat2, which makes it relatively easy to experiment with such attack techniques.</description>
+    </item>
+    
+    <item>
+      <title>Detect Public S3 Bucket using Splunk</title>
+      <link>https://harwinds.github.io/logsec/posts/detect-public-s3-bucket-using-splunk/</link>
+      <pubDate>Sat, 20 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/detect-public-s3-bucket-using-splunk/</guid>
+      <description>In today&amp;rsquo;s post, we will learn how to detect a public S3 bucket using Splunk. Later, we will see how we can respond to such incidents and even prevent it from happening in the first place. As you will see in the following examples, there are multiple ways to create a S3 bucket and make it public. Also, for this blog, I created some subdomains of logsec.cloud in Route53.
+Scenario 1: Using the AWS Web Console Create a S3 bucket and Go to &amp;ldquo;Permissions&amp;rdquo; - &amp;ldquo;Access Control List&amp;rdquo; - &amp;ldquo;Public Access&amp;rdquo; - &amp;ldquo;Everyone&amp;rdquo; - Access to the objects -</description>
+    </item>
+    
+    <item>
+      <title>Investigating S3 Scanning Activites on AWS</title>
+      <link>https://harwinds.github.io/logsec/posts/investigating-on-aws/</link>
+      <pubDate>Thu, 04 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/investigating-on-aws/</guid>
+      <description>During the past week, we detected some suspicious activities across multiple AWS accounts in one of our client&amp;rsquo;s environment. These activites seems related to scanning activities from a bad actor on S3 buckets. One of the sample logs from S3 Access logs:
+84fd7086179626a759fb59a0252a26d26dc1685e30f0ab922266b5abace8f998 &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket [01/Jun/2020:13:27:34 +0000] 10.247.13.187 arn:aws:iam::799199334739:user/starling-ladyblackhawk-iad-prod 9WDX6MBZFQ6Z6RDR REST.HEAD.BUCKET - &amp;quot;HEAD / HTTP/1.1&amp;quot; 403 AccessDenied 243 - 9 - &amp;quot;-&amp;quot; &amp;quot;AWSConfig&amp;quot; - wFvPfIaSbdpcnNMdcTj+BNWn00r3OfqHV8sTt8gUXMzLA7O/MiWg+NPckix2TThK15V/p1JigVc= SigV4 ECDHE-RSA-AES128-SHA AuthHeader &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket.s3.amazonaws.com TLSv1.2First thing that got our attention to this specific log is the username starling-ladyblack-iad-prod, question to ask at this stage is this a rouge IAM user?</description>
+    </item>
+    
+    <item>
+      <title>Git Notes</title>
+      <link>https://harwinds.github.io/logsec/posts/git-notes/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/git-notes/</guid>
+      <description>Git is a version control system. Basically, if someone changes a file (like opens a document and writes stuff in it, changes a line of code, or so on) it records the differences between the new version and the old version, and maintains a history. This allows people to preserve differing versions, go back in time to earlier ones, review changes as they have occurred over time, and so on.</description>
+    </item>
+    
+    <item>
+      <title>Ingest VPC Flow Logs with Additional Meta-Data to Splunk</title>
+      <link>https://harwinds.github.io/logsec/posts/ingest-vpc-flow-logs-to-splunk/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/ingest-vpc-flow-logs-to-splunk/</guid>
+      <description>In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&amp;rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
+All Terraform files are available to download at my GitHub Repo.</description>
+    </item>
+    
+    <item>
+      <title>Ingest AWS CloudTrail logs to Splunk</title>
+      <link>https://harwinds.github.io/logsec/posts/ingest-cloudtrail-logs-to-splunk/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://harwinds.github.io/logsec/posts/ingest-cloudtrail-logs-to-splunk/</guid>
+      <description>This blog post will walk you through setting up a Splunk environment on AWS for lab purposes using Splunk Enterprise Free 60-day trail. After 60 days you can convert to a perpetual free license or purchase a Splunk Enterprise license to continue using the expanded functionality designed for enterprise-scale deployments. There is an indexing limit of 500 MB/Day which will be more than enough for our demo purposes.
+There are multiple ways to accomplish this - using AWS Console, CLI or using CloudFormation.</description>
+    </item>
+    
+  </channel>
+</rss>

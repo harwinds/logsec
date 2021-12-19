@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://harwinds.github.io/logsec/sitemap.xml
