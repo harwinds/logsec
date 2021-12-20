@@ -8,14 +8,14 @@
 <meta name=description content="AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
 You can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.">
 <meta name=author content>
-<link rel=canonical href=https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/>
-<link crossorigin=anonymous href=/logsec/assets/css/stylesheet.min.c88963fe2d79462000fd0fb1b3737783c32855d340583e4523343f8735c787f0.css integrity="sha256-yIlj/i15RiAA/Q+xs3N3g8MoVdNAWD5FIzQ/hzXHh/A=" rel="preload stylesheet" as=style>
-<script defer crossorigin=anonymous src=/logsec/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
-<link rel=icon href=https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E>
-<link rel=icon type=image/png sizes=16x16 href=https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E>
-<link rel=icon type=image/png sizes=32x32 href=https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E>
-<link rel=apple-touch-icon href=https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E>
-<link rel=mask-icon href=https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E>
+<link rel=canonical href=https://www.logsec.cloud/posts/investigating-cloudtrail-logs-with-elk/>
+<link crossorigin=anonymous href=/assets/css/stylesheet.min.c88963fe2d79462000fd0fb1b3737783c32855d340583e4523343f8735c787f0.css integrity="sha256-yIlj/i15RiAA/Q+xs3N3g8MoVdNAWD5FIzQ/hzXHh/A=" rel="preload stylesheet" as=style>
+<script defer crossorigin=anonymous src=/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
+<link rel=icon type=image/png sizes=16x16 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
+<link rel=icon type=image/png sizes=32x32 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
+<link rel=apple-touch-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
+<link rel=mask-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
 <meta name=theme-color content="#2e2e33">
 <meta name=msapplication-TileColor content="#2e2e33">
 <meta name=generator content="Hugo 0.91.0">
@@ -26,23 +26,23 @@ You can ship these CloudTrail logs into the ELK stack and learn how to visualize
 <meta property="og:description" content="AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
 You can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/"><meta property="og:image" content="https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts">
+<meta property="og:url" content="https://www.logsec.cloud/posts/investigating-cloudtrail-logs-with-elk/"><meta property="og:image" content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-04-20T00:00:00+00:00">
 <meta property="article:modified_time" content="2021-04-20T00:00:00+00:00"><meta property="og:site_name" content="ExampleSite">
 <meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://harwinds.github.io/logsec/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E">
+<meta name=twitter:image content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E">
 <meta name=twitter:title content="Investigating CloudTrail Logs using ELK Stack">
 <meta name=twitter:description content="AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
 You can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://harwinds.github.io/logsec/posts/"},{"@type":"ListItem","position":3,"name":"Investigating CloudTrail Logs using ELK Stack","item":"https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Investigating CloudTrail Logs using ELK Stack","name":"Investigating CloudTrail Logs using ELK Stack","description":"AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.\nYou can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.","keywords":[],"articleBody":"AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.\nYou can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana. Here are some of the KQL (Kibana Query Language) queries that you can use to search for some key CloudTrail events to monitor for Security in AWS.\nPlease note that I’m using the index pattern cloudwatch* for the CloudTrail logs.\n1. CloudTrail Logging Turned Off Identifies the deletion of an AWS log trail. An adversary may delete trails in an attempt to evade defenses.\nKQL Query:\n_index:cloudwatch* and eventName:(DeleteTrail or UpdateTrail or StopLogging)\rMITRE ATT\u0026CK Tactic: Defense Evasion\nMITRE ATT\u0026CK Techniques: T1562 - Impair Defenses\n2. Delete Attempts on CloudTrail S3 Buckets Identifies the deletion of an AWS S3 bucket containing the CloudTrai logs. You can update the requestParameters.bucketName as per the naming convention for the S3 buckets storing CloudTrail logs. An adversary may delete trails in an attempt to evade defenses.\nKQL Query:\n_index:cloudwatch* AND eventName:(DeleteBucket OR DeleteObject OR DeleteObjects) AND requestParameters.bucketName: *logs\rMITRE ATT\u0026CK Tactics: Impact\nMITRE ATT\u0026CK Techniques: T1485 - (Data Destruction)\n3. Creation of New IAM User Detects creation of new user, in the actual production environment, most probably you will be using federated sign-in through Active Directory (AD) and Active Directory Federation Services (ADFS), instead of local IAM users. With the help of this search, you can easily search if someone creates a new local user.\nKQL Query:\n_index:cloudwatch* AND eventName:CreateUser AND eventSource:iam.amazonaws.com\rMITRE ATT\u0026CK Tactics: Persistence\nMITRE ATT\u0026CK Techniques: T1136 - Create Account\n4. Cross Account VPC Peering Connections A VPC peering connection is a networking connection between two VPCs that enables you to route traffic between them using private IPv4 addresses or IPv6 addresses. Instances in either VPC can communicate with each other as if they are within the same network. You can create a VPC peering connection between your own VPCs, or with a VPC in another AWS account. The VPCs can be in different regions (also known as an inter-region VPC peering connection).\nThis can produce false positives for cases where VPC peering is created for legitimate purposes, but you can look for events where connection is made between VPC outside of organization.\nKQL Query:\n_index:cloudwatch* and eventSource:\"ec2.amazonaws.com\" and eventName:\"CreateVpcPeeringConnection\"\rMITRE ATT\u0026CK Tactics: Initial Access\nMITRE ATT\u0026CK Techniques: T1199\n5. AWS IAM Backdoor Users Keys Detects AWS API key creation for a user by another user. Backdoored users can be used to obtain persistence in the AWS environment. Also with this alert, you can detect a flow of AWS keys in your org.\nKQL Query:\n((eventSource:\"iam.amazonaws.com\" AND eventName:\"CreateAccessKey\") AND (NOT (userIdentity.arn.keyword:*responseElements.accessKey.userName*)))\rMITRE ATT\u0026CK Tactics: Persistence\nMITRE ATT\u0026CK Techniques: T1098\nSub-Technique: T1098.001 Additional Cloud Credentials\n6. AWS EC2 Startup Shell Script Change Detects changes to the EC2 instance startup script. The shell script will be executed as root/SYSTEM everytime the specific instances are booted up.\nKQL Query:\n(eventSource:\"ec2.amazonaws.com\" AND requestParameters.userData.keyword:* AND eventName:\"ModifyInstanceAttribute\")\r7. AWS - Retrieve Secret on Secrets Manager Detected This rule is identifies when users attempt to access the secrets in AWS Secrets Manager to steal certificates, credentials, or other sensitive material.\nKQL Query:\n(eventSource:\"secretsmanager.amazonaws.com\" AND eventName:\"GetSecretValue\")\rMITRE ATT\u0026CK Tactics: Credential Access\nMITRE ATT\u0026CK Techniques: T1528\n ","wordCount":"583","inLanguage":"en","datePublished":"2021-04-20T00:00:00Z","dateModified":"2021-04-20T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://harwinds.github.io/logsec/posts/investigating-cloudtrail-logs-with-elk/"},"publisher":{"@type":"Organization","name":"logsec","logo":{"@type":"ImageObject","url":"https://harwinds.github.io/logsec/%3Clink%20/%20abs%20url%3E"}}}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://www.logsec.cloud/posts/"},{"@type":"ListItem","position":3,"name":"Investigating CloudTrail Logs using ELK Stack","item":"https://www.logsec.cloud/posts/investigating-cloudtrail-logs-with-elk/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Investigating CloudTrail Logs using ELK Stack","name":"Investigating CloudTrail Logs using ELK Stack","description":"AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.\nYou can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana.","keywords":[],"articleBody":"AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.\nYou can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana. Here are some of the KQL (Kibana Query Language) queries that you can use to search for some key CloudTrail events to monitor for Security in AWS.\nPlease note that I’m using the index pattern cloudwatch* for the CloudTrail logs.\n1. CloudTrail Logging Turned Off Identifies the deletion of an AWS log trail. An adversary may delete trails in an attempt to evade defenses.\nKQL Query:\n_index:cloudwatch* and eventName:(DeleteTrail or UpdateTrail or StopLogging)\rMITRE ATT\u0026CK Tactic: Defense Evasion\nMITRE ATT\u0026CK Techniques: T1562 - Impair Defenses\n2. Delete Attempts on CloudTrail S3 Buckets Identifies the deletion of an AWS S3 bucket containing the CloudTrai logs. You can update the requestParameters.bucketName as per the naming convention for the S3 buckets storing CloudTrail logs. An adversary may delete trails in an attempt to evade defenses.\nKQL Query:\n_index:cloudwatch* AND eventName:(DeleteBucket OR DeleteObject OR DeleteObjects) AND requestParameters.bucketName: *logs\rMITRE ATT\u0026CK Tactics: Impact\nMITRE ATT\u0026CK Techniques: T1485 - (Data Destruction)\n3. Creation of New IAM User Detects creation of new user, in the actual production environment, most probably you will be using federated sign-in through Active Directory (AD) and Active Directory Federation Services (ADFS), instead of local IAM users. With the help of this search, you can easily search if someone creates a new local user.\nKQL Query:\n_index:cloudwatch* AND eventName:CreateUser AND eventSource:iam.amazonaws.com\rMITRE ATT\u0026CK Tactics: Persistence\nMITRE ATT\u0026CK Techniques: T1136 - Create Account\n4. Cross Account VPC Peering Connections A VPC peering connection is a networking connection between two VPCs that enables you to route traffic between them using private IPv4 addresses or IPv6 addresses. Instances in either VPC can communicate with each other as if they are within the same network. You can create a VPC peering connection between your own VPCs, or with a VPC in another AWS account. The VPCs can be in different regions (also known as an inter-region VPC peering connection).\nThis can produce false positives for cases where VPC peering is created for legitimate purposes, but you can look for events where connection is made between VPC outside of organization.\nKQL Query:\n_index:cloudwatch* and eventSource:\"ec2.amazonaws.com\" and eventName:\"CreateVpcPeeringConnection\"\rMITRE ATT\u0026CK Tactics: Initial Access\nMITRE ATT\u0026CK Techniques: T1199\n5. AWS IAM Backdoor Users Keys Detects AWS API key creation for a user by another user. Backdoored users can be used to obtain persistence in the AWS environment. Also with this alert, you can detect a flow of AWS keys in your org.\nKQL Query:\n((eventSource:\"iam.amazonaws.com\" AND eventName:\"CreateAccessKey\") AND (NOT (userIdentity.arn.keyword:*responseElements.accessKey.userName*)))\rMITRE ATT\u0026CK Tactics: Persistence\nMITRE ATT\u0026CK Techniques: T1098\nSub-Technique: T1098.001 Additional Cloud Credentials\n6. AWS EC2 Startup Shell Script Change Detects changes to the EC2 instance startup script. The shell script will be executed as root/SYSTEM everytime the specific instances are booted up.\nKQL Query:\n(eventSource:\"ec2.amazonaws.com\" AND requestParameters.userData.keyword:* AND eventName:\"ModifyInstanceAttribute\")\r7. AWS - Retrieve Secret on Secrets Manager Detected This rule is identifies when users attempt to access the secrets in AWS Secrets Manager to steal certificates, credentials, or other sensitive material.\nKQL Query:\n(eventSource:\"secretsmanager.amazonaws.com\" AND eventName:\"GetSecretValue\")\rMITRE ATT\u0026CK Tactics: Credential Access\nMITRE ATT\u0026CK Techniques: T1528\n ","wordCount":"583","inLanguage":"en","datePublished":"2021-04-20T00:00:00Z","dateModified":"2021-04-20T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.logsec.cloud/posts/investigating-cloudtrail-logs-with-elk/"},"publisher":{"@type":"Organization","name":"logsec","logo":{"@type":"ImageObject","url":"https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <header class=header>
 <nav class=nav>
 <div class=logo>
-<a href=https://harwinds.github.io/logsec accesskey=h title="logsec (Alt + H)">logsec</a>
+<a href=https://www.logsec.cloud accesskey=h title="logsec (Alt + H)">logsec</a>
 <span class=logo-switches>
 <button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
 </button>
@@ -50,17 +50,17 @@ You can ship these CloudTrail logs into the ELK stack and learn how to visualize
 </div>
 <ul id=menu>
 <li>
-<a href=https://harwinds.github.io/logsec/pages/about title=about>
+<a href=https://www.logsec.cloud/pages/about title=about>
 <span>about</span>
 </a>
 </li>
 <li>
-<a href=https://harwinds.github.io/logsec/posts/ title=posts>
+<a href=https://www.logsec.cloud/posts/ title=posts>
 <span>posts</span>
 </a>
 </li>
 <li>
-<a href=https://harwinds.github.io/logsec/search/ title=search>
+<a href=https://www.logsec.cloud/search/ title=search>
 <span>search</span>
 </a>
 </li>
@@ -70,7 +70,7 @@ You can ship these CloudTrail logs into the ELK stack and learn how to visualize
 <main class=main>
 <article class=post-single>
 <header class=post-header>
-<div class=breadcrumbs><a href=https://harwinds.github.io/logsec>Home</a>&nbsp;»&nbsp;<a href=https://harwinds.github.io/logsec/posts/>Posts</a></div>
+<div class=breadcrumbs><a href=https://www.logsec.cloud>Home</a>&nbsp;»&nbsp;<a href=https://www.logsec.cloud/posts/>Posts</a></div>
 <h1 class=post-title>
 Investigating CloudTrail Logs using ELK Stack
 </h1>
@@ -150,12 +150,12 @@ Investigating CloudTrail Logs using ELK Stack
 </div>
 <footer class=post-footer>
 <nav class=paginav>
-<a class=prev href=https://harwinds.github.io/logsec/posts/git-workflow-automation/>
+<a class=prev href=https://www.logsec.cloud/posts/git-workflow-automation/>
 <span class=title>« Prev Page</span>
 <br>
 <span>GitHub Workflow Automation Script</span>
 </a>
-<a class=next href=https://harwinds.github.io/logsec/posts/splunk-range-setup/>
+<a class=next href=https://www.logsec.cloud/posts/splunk-range-setup/>
 <span class=title>Next Page »</span>
 <br>
 <span>Splunk Attack Range on AWS - Guide</span>
@@ -165,7 +165,7 @@ Investigating CloudTrail Logs using ELK Stack
 </article>
 </main>
 <footer class=footer>
-<span>&copy; 2021 <a href=https://harwinds.github.io/logsec>logsec</a></span>
+<span>&copy; 2021 <a href=https://www.logsec.cloud>logsec</a></span>
 </footer>
 <a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </a>
