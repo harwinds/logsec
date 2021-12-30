@@ -71,17 +71,9 @@
 </h2>
 </header>
 <section class=entry-content>
-<p>Recently, I’ve been working with understanding and detecting Log4j vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html by Nik Alleyne on his blog securitynik.com.
+<p>Recently, I’ve been working on understanding and detecting Log4j vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html by Nik Alleyne on his blog securitynik.com.
 To detect outbound traffic going to IOC’s related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:
-First create a new index logs-threat-intel
-Using the Dev Tools in Kibana, isse the Create Index API PUT /logs-threat-intel
-{
-"settings": {
-"number_of_shards": 1
-},
-"mappings": {
-"properties": {
-"ioc....</p>
+1. First create a new index logs-threat-intel Using the Dev Tools in Kibana, isse the Create Index API...</p>
 </section>
 <footer class=entry-footer><span title="2021-12-28 00:00:00 +0000 UTC">December 28, 2021</span>&nbsp;·&nbsp;2 min</footer>
 <a class=entry-link aria-label="post link to Upload CSV Data to Elasticsearch" href=https://www.logsec.cloud/posts/upload-csv-to-elastic/></a>
