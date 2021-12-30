@@ -67,76 +67,19 @@
 </header>
 <article class=post-entry>
 <header class=entry-header>
-<h2>Upload CSV Data to Elasticsearch
+<h2>Ingest AWS CloudTrail logs to Splunk
 </h2>
 </header>
 <section class=entry-content>
-<p>Recently, I’ve been working with understanding and detecting Log4j vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html by Nik Alleyne on his blog securitynik.com.
-To detect outbound traffic going to IOC’s related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:
-First create a new index logs-threat-intel
-Using the Dev Tools in Kibana, isse the Create Index API PUT /logs-threat-intel
-{
-"settings": {
-"number_of_shards": 1
-},
-"mappings": {
-"properties": {
-"ioc....</p>
+<p>This blog post will walk you through setting up a Splunk environment on AWS for lab purposes using Splunk Enterprise Free 60-day trail. After 60 days you can convert to a perpetual free license or purchase a Splunk Enterprise license to continue using the expanded functionality designed for enterprise-scale deployments. There is an indexing limit of 500 MB/Day which will be more than enough for our demo purposes.
+There are multiple ways to accomplish this - using AWS Console, CLI or using CloudFormation....</p>
 </section>
-<footer class=entry-footer><span title="2021-12-28 00:00:00 +0000 UTC">December 28, 2021</span>&nbsp;·&nbsp;2 min</footer>
-<a class=entry-link aria-label="post link to Upload CSV Data to Elasticsearch" href=https://www.logsec.cloud/posts/upload-csv-to-elastic/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>GitHub Workflow Automation Script
-</h2>
-</header>
-<section class=entry-content>
-<p>A quick blog post to share a bash script that I almost use daily to automate the basic GitHub “commit and push” prcoess. Steps to reproduce:
-Create a file, for example codecommit.sh and copy/paste the content below: #!/bin/bash RESET="\033[0m" BOLD="\033[1m" YELLOW="\033[38;5;11m" #Get the argument message #read -p "Add Commit message: " message read -p "$(echo -e $BOLD$YELLOW"Add Commit message: "$RESET)" message #Stage all changes git add . #Commit the file(s) git commit -m "$message" echo "Added the commit with message: '$message'" #Get current branch and push changes current_branch=$(git branch --show-current) git push origin "$current_branch" #echo "Pushed changes to '$current_branch' branch" echo -e $BOLD$YELLOW"Pushed changes to '$current_branch' branch"$RESET Move it to the location /usr/local/bin to make this shell script global....</p>
-</section>
-<footer class=entry-footer><span title="2021-09-08 00:00:00 +0000 UTC">September 8, 2021</span>&nbsp;·&nbsp;1 min</footer>
-<a class=entry-link aria-label="post link to GitHub Workflow Automation Script" href=https://www.logsec.cloud/posts/git-workflow-automation/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>Investigating CloudTrail Logs using ELK Stack
-</h2>
-</header>
-<section class=entry-content>
-<p>AWS CloudTrail is an AWS service that helps you enable governance, compliance, and operational and risk auditing of your AWS account. Actions taken by a user, role, or an AWS service are recorded as events in CloudTrail. Events include actions taken in the AWS Management Console, AWS Command Line Interface, and AWS SDKs and APIs.
-You can ship these CloudTrail logs into the ELK stack and learn how to visualize these events, near real time, using Kibana....</p>
-</section>
-<footer class=entry-footer><span title="2021-04-20 00:00:00 +0000 UTC">April 20, 2021</span>&nbsp;·&nbsp;3 min</footer>
-<a class=entry-link aria-label="post link to Investigating CloudTrail Logs using ELK Stack" href=https://www.logsec.cloud/posts/investigating-cloudtrail-logs-with-elk/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>Splunk Attack Range on AWS - Guide
-</h2>
-</header>
-<section class=entry-content>
-<p>A quick guide to get Splunk Attack Range running on AWS. If you’re trying to run this locally, I would suggest to have a look over this post Splunk Attack Range in a virtualized Ubuntu Guest VM.
-It’s a tool that allows you to create vulnerable instrumented local or cloud environments to simulate attacks against and collect the data into Splunk. I came across this Splunk post Detecting CVE-2020-1472 and was trying to replicate this in my own environment....</p>
-</section>
-<footer class=entry-footer><span title="2020-10-02 00:00:00 +0000 UTC">October 2, 2020</span>&nbsp;·&nbsp;4 min</footer>
-<a class=entry-link aria-label="post link to Splunk Attack Range on AWS - Guide" href=https://www.logsec.cloud/posts/splunk-range-setup/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>Splunk Enterprise Certified Admin Notes
-</h2>
-</header>
-<section class=entry-content>
-<p>I passed my Splunk Enterprise Certified Admin SPLK 1003 cert on September 11th, 2020. While I have been actively working with Splunk as part of my job, clearing the exam however requires a consistent and well planned effort.
-All these points are taken from the exam blueprint: https://www.splunk.com/pdfs/training/Splunk-Test-Blueprint-Admin-v.1.1.pdf updated with either with Splunk documentation link I studied to prepare for that specific part or youtube video I found useful. Along with these I also bought Udemy Course The Complete Splunk Enterprise Certified Admin Course 2020...</p>
-</section>
-<footer class=entry-footer><span title="2020-09-22 00:00:00 +0000 UTC">September 22, 2020</span>&nbsp;·&nbsp;5 min</footer>
-<a class=entry-link aria-label="post link to Splunk Enterprise Certified Admin Notes" href=https://www.logsec.cloud/posts/splunk-enterprise-certified-admin/></a>
+<footer class=entry-footer><span title="2020-04-20 00:00:00 +0000 UTC">April 20, 2020</span>&nbsp;·&nbsp;8 min</footer>
+<a class=entry-link aria-label="post link to Ingest AWS CloudTrail logs to Splunk" href=https://www.logsec.cloud/posts/ingest-cloudtrail-logs-to-splunk/></a>
 </article>
 <footer class=page-footer>
 <nav class=pagination>
-<a class=next href=https://www.logsec.cloud/posts/page/2/>Next Page »</a>
+<a class=prev href=https://www.logsec.cloud/posts/page/2/>« Prev Page</a>
 </nav>
 </footer>
 </main>

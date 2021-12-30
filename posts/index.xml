@@ -9,7 +9,19 @@
       <link>https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 08 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 28 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Upload CSV Data to Elasticsearch</title>
+      <link>https://www.logsec.cloud/posts/upload-csv-to-elastic/</link>
+      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.logsec.cloud/posts/upload-csv-to-elastic/</guid>
+      <description>Recently, I&amp;rsquo;ve been working with understanding and detecting Log4j vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html by Nik Alleyne on his blog securitynik.com.
+To detect outbound traffic going to IOC&amp;rsquo;s related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:
+ First create a new index logs-threat-intel
+Using the Dev Tools in Kibana, isse the Create Index API  PUT /logs-threat-intel{&amp;quot;settings&amp;quot;: {&amp;quot;number_of_shards&amp;quot;: 1},&amp;quot;mappings&amp;quot;: {&amp;quot;properties&amp;quot;: {&amp;quot;ioc.</description>
+    </item>
+    
     <item>
       <title>GitHub Workflow Automation Script</title>
       <link>https://www.logsec.cloud/posts/git-workflow-automation/</link>

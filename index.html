@@ -81,6 +81,27 @@
 </article>
 <article class=post-entry>
 <header class=entry-header>
+<h2>Upload CSV Data to Elasticsearch
+</h2>
+</header>
+<section class=entry-content>
+<p>Recently, I’ve been working with understanding and detecting Log4j vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html by Nik Alleyne on his blog securitynik.com.
+To detect outbound traffic going to IOC’s related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:
+First create a new index logs-threat-intel
+Using the Dev Tools in Kibana, isse the Create Index API PUT /logs-threat-intel
+{
+"settings": {
+"number_of_shards": 1
+},
+"mappings": {
+"properties": {
+"ioc....</p>
+</section>
+<footer class=entry-footer><span title="2021-12-28 00:00:00 +0000 UTC">December 28, 2021</span>&nbsp;·&nbsp;2 min</footer>
+<a class=entry-link aria-label="post link to Upload CSV Data to Elasticsearch" href=https://www.logsec.cloud/posts/upload-csv-to-elastic/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
 <h2>GitHub Workflow Automation Script
 </h2>
 </header>
@@ -126,17 +147,6 @@ All these points are taken from the exam blueprint: https://www.splunk.com/pdfs/
 </section>
 <footer class=entry-footer><span title="2020-09-22 00:00:00 +0000 UTC">September 22, 2020</span>&nbsp;·&nbsp;5 min</footer>
 <a class=entry-link aria-label="post link to Splunk Enterprise Certified Admin Notes" href=https://www.logsec.cloud/posts/splunk-enterprise-certified-admin/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>dnscat2: Command and Control over the DNS
-</h2>
-</header>
-<section class=entry-content>
-<p>No matter how tightly you restrict outbound access from your network, you probably allow DNS protocol to at least one server. Adversaries can abuse this access in your firewall to establish stealthy Command and Control (C2) channels or to exfiltrate data that is difficult to block. To understand the use of DNS for C2 tunneling, let’s take a look at Ron Bowes’s tool dnscat2, which makes it relatively easy to experiment with such attack techniques....</p>
-</section>
-<footer class=entry-footer><span title="2020-08-15 00:00:00 +0000 UTC">August 15, 2020</span>&nbsp;·&nbsp;5 min</footer>
-<a class=entry-link aria-label="post link to dnscat2: Command and Control over the DNS" href=https://www.logsec.cloud/posts/dnscat2-demo-on-aws/></a>
 </article>
 <footer class=page-footer>
 <nav class=pagination>
