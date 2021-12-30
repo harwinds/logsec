@@ -82,7 +82,7 @@ Upload CSV Data to Elasticsearch
 </header>
 <div class=post-content><p>Recently, I&rsquo;ve been working on understanding and detecting <a href=https://logging.apache.org/log4j/2.x/>Log4j</a> vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series <a href=https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html>https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html</a> by Nik Alleyne on his blog <a href=https://www.securitynik.com/>securitynik.com</a>.</p>
 <p>To detect outbound traffic going to IOC&rsquo;s related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:</p>
-<h4 id=1-first-create-a-new-index-logs-threat-intel>1. First create a new index <code>logs-threat-intel</code><a hidden class=anchor aria-hidden=true href=#1-first-create-a-new-index-logs-threat-intel>#</a></h4>
+<h3 id=1-first-create-a-new-index-logs-threat-intel>1. First create a new index <code>logs-threat-intel</code><a hidden class=anchor aria-hidden=true href=#1-first-create-a-new-index-logs-threat-intel>#</a></h3>
 <p>Using the <code>Dev Tools</code> in Kibana, isse the Create Index API</p>
 <pre tabindex=0><code>PUT /logs-threat-intel
 {
@@ -103,7 +103,7 @@ Upload CSV Data to Elasticsearch
     }
   }
 }
-</code></pre><h4 id=2-create-a-new-ingest-node-pipeline-logs-threat-intel-pipeline>2. Create a new Ingest Node Pipeline <code>logs-threat-intel-pipeline</code><a hidden class=anchor aria-hidden=true href=#2-create-a-new-ingest-node-pipeline-logs-threat-intel-pipeline>#</a></h4>
+</code></pre><h3 id=2-create-a-new-ingest-node-pipeline-logs-threat-intel-pipeline>2. Create a new Ingest Node Pipeline <code>logs-threat-intel-pipeline</code><a hidden class=anchor aria-hidden=true href=#2-create-a-new-ingest-node-pipeline-logs-threat-intel-pipeline>#</a></h3>
 <p><a href=https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html>Ingest pipelines</a> let you perform common transformations on your data before indexing. For example, you can use pipelines to remove fields, extract values from text, and enrich your data.</p>
 <pre tabindex=0><code>PUT _ingest/pipeline/logs-threat-intel-pipeline
 {
@@ -147,12 +147,12 @@ Upload CSV Data to Elasticsearch
     }
   ]
 }
-</code></pre><h4 id=3-next-map-the-ingest-node-pipeline-created-in-step-2-with-the-index-created-in-step-1>3. Next, map the Ingest Node Pipeline created in Step 2 with the index created in Step 1.<a hidden class=anchor aria-hidden=true href=#3-next-map-the-ingest-node-pipeline-created-in-step-2-with-the-index-created-in-step-1>#</a></h4>
+</code></pre><h3 id=3-next-map-the-ingest-node-pipeline-created-in-step-2-with-the-index-created-in-step-1>3. Next, map the Ingest Node Pipeline created in Step 2 with the index created in Step 1.<a hidden class=anchor aria-hidden=true href=#3-next-map-the-ingest-node-pipeline-created-in-step-2-with-the-index-created-in-step-1>#</a></h3>
 <pre tabindex=0><code>PUT logs-threat-intel/_settings
 {
   &quot;index.default_pipeline&quot;: &quot;logs-threat-intel-pipeline&quot;
 }
-</code></pre><h4 id=4-example-on-how-to-ingest-new-iocs>4. Example on how to ingest new IOC&rsquo;s<a hidden class=anchor aria-hidden=true href=#4-example-on-how-to-ingest-new-iocs>#</a></h4>
+</code></pre><h3 id=4-example-on-how-to-ingest-new-iocs>4. Example on how to ingest new IOC&rsquo;s<a hidden class=anchor aria-hidden=true href=#4-example-on-how-to-ingest-new-iocs>#</a></h3>
 <pre tabindex=0><code>POST logs-threat-intel/_doc/1
 {
     &quot;ioc.ip&quot;: &quot;&lt;IPv4/IPv6&gt;&quot;
@@ -167,7 +167,7 @@ Upload CSV Data to Elasticsearch
    curl -k -X POST <span style=color:#e6db74>&#39;https://&lt;ELASTICSEARCH_URL/ELASTICSEARCH_IP&gt;:9200/logs-threat-intel/_doc/?pretty&#39;</span> -H <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> -u &lt;USERNAME&gt;:&lt;PASSWORD&gt; -d <span style=color:#e6db74>&#34;{ \&#34;ioc.ip\&#34;: \&#34;</span>$f1<span style=color:#e6db74>\&#34;, \&#34;threatintel.indicator.signature\&#34;: \&#34;log4j\&#34;}&#34;</span>
    <span style=color:#66d9ef>done</span> &gt; /dev/null 2&gt;&amp;<span style=color:#ae81ff>1</span> &amp; &lt; log4j-ioc.csv
 </code></pre></div><p>Above script reads the contents of the file <code>log4j-ioc.csv</code> one at a time and ingest to elasticsearch under the index <code>logs-threat-intel</code>.</p>
-<h4 id=references>References:<a hidden class=anchor aria-hidden=true href=#references>#</a></h4>
+<h3 id=references>References:<a hidden class=anchor aria-hidden=true href=#references>#</a></h3>
 <ul>
 <li>Create index API: <a href=https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html>https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html</a></li>
 <li>Create or update pipeline API: <a href=https://www.elastic.co/guide/en/elasticsearch/reference/current/put-pipeline-api.html>https://www.elastic.co/guide/en/elasticsearch/reference/current/put-pipeline-api.html</a></li>
