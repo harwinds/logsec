@@ -1,221 +1,94 @@
-<!doctype html><html lang=en dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>Ingest VPC Flow Logs with Additional Meta-Data to Splunk | logsec</title>
-<meta name=keywords content>
-<meta name=description content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
-All Terraform files are available to download at my GitHub Repo.">
-<meta name=author content>
-<link rel=canonical href=https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/>
-<link crossorigin=anonymous href=/assets/css/stylesheet.min.2e8c084df0c03dc3f8c62a1feda74b249a4055deca22d01cf92e81273e05b485.css integrity="sha256-LowITfDAPcP4xiof7adLJJpAVd7KItAc+S6BJz4FtIU=" rel="preload stylesheet" as=style>
-<script defer crossorigin=anonymous src=/assets/js/highlight.min.7680afc38aa6b15ddf158a4f3780b7b1f7dde7e91d26f073e6229bb7a0793c92.js integrity="sha256-doCvw4qmsV3fFYpPN4C3sffd5+kdJvBz5iKbt6B5PJI=" onload=hljs.initHighlightingOnLoad()></script>
-<link rel=icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
-<link rel=icon type=image/png sizes=16x16 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
-<link rel=icon type=image/png sizes=32x32 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
-<link rel=apple-touch-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
-<link rel=mask-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.91.0">
-<noscript>
-<style>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript><meta property="og:title" content="Ingest VPC Flow Logs with Additional Meta-Data to Splunk">
-<meta property="og:description" content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
-All Terraform files are available to download at my GitHub Repo.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"><meta property="og:image" content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2020-05-01T00:00:00+00:00">
-<meta property="article:modified_time" content="2020-05-01T00:00:00+00:00"><meta property="og:site_name" content="logsec">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E">
-<meta name=twitter:title content="Ingest VPC Flow Logs with Additional Meta-Data to Splunk">
-<meta name=twitter:description content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
-All Terraform files are available to download at my GitHub Repo.">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://www.logsec.cloud/posts/"},{"@type":"ListItem","position":3,"name":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","item":"https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","name":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","description":"In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk\u0026rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.\nAll Terraform files are available to download at my GitHub Repo.","keywords":[],"articleBody":"In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk’s profs.conf file for correct field extraction for the additional VPC flow log fields.\nAll Terraform files are available to download at my GitHub Repo. You just need to edit the terraform.tfvars file and put your AWS ACCESS KEY ID and SECRET ACCESS KEY.\nmaven@pluto:~$ tree ./terraform/ ./terraform/ ├── cloudtrail.tf ├── module.tf ├── output.tf ├── provider.tf ├── splunk │ ├── instance_splunk.tf │ ├── splunk_iam_role.tf │ ├── splunk_iam_role_pol.json │ ├── user_data_splunk.sh | ├── sqs_vpc_flow_logs.tf │ ├── variables.tf | ├── vpc_flow_log.tf │ └── vpc_splunk.tf ├── sqs_cloudtrail_logs.tf ├── terraform.tfvars ├── variables.tf └── versions.tf In our previous post, we setup a Splunk environment on AWS using Splunk Enterprise. To the same exisitng infrastructure, we added few things to achieve our today’s task. Terrafrom file vpc_flow_log.tf and sqs_vpc_flow_logs.tf in addition to our earlier AWS infrastructure.\nCreate a VPC Flow log for the existing Splunk VPC VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.\nDefault VPC Flow Log format\n             \rBut we will creating a custom format for the flow log record using additonal meta-data fields. This helps us to create flow logs that are specific to our needs, you can add or omit the fields based on your requirements. We will be adding all the available fields for this demo. Additonal fields like instance-id makes an analyst’s life much easier during investigation to find the actual source, instead of just relying on srcaddr, as EC2 instances are ephermal in nature, source address/private IP address can later be assigned to a different instance.\n                    \r# Flow Logs for the Splunk VPC resource \"aws_flow_log\" \"splunk_vpc_flow_log\" { log_destination = aws_s3_bucket.flow_log_bucket.arn log_destination_type = \"s3\" traffic_type = \"ALL\" vpc_id = aws_vpc.splunk_vpc.id log_format = \"$${version}$${vpc-id}$${subnet-id}$${instance-id}$${interface-id}$${account-id}$${type}$${srcaddr}$${dstaddr}$${srcport}$${dstport}$${pkt-srcaddr}$${pkt-dstaddr}$${protocol}$${bytes}$${packets}$${start}$${end}$${action}$${tcp-flags}$${log-status}\" max_aggregation_interval = \"600\" }  Please note, a resource-based policy will be created for you and attached to the target bucket.\n Create an Amazon S3 bucket for our VPC Flow Logs. # S3 bucket for VPC Flow logs resource \"aws_s3_bucket\" \"flow_log_bucket\" { bucket = \"${var.account_id}-lab-vpc-flow-logs\" } output \"splunk_vpc_log_id\" { description = \"The Flow Log ID\" value = aws_flow_log.splunk_vpc_flow_log.id } Create two SQS Queues. Now it’s time to create the SQS queues. Two queues will be required. One queue will be the dead letter queue for error messages to be kicked over to and the other will be the queue used to capture the S3 notifications when a new VPC Flow Log event is sent to the S3 bucket we created in earlier step.\n# Add Amazon S3 Event Notification configuration to SQS Queue resource \"aws_sqs_queue\" \"queue_flow_logs\" { name = \"s3_event_notification_queue_flow_logs\" visibility_timeout_seconds = 300 redrive_policy = jsonencode({ deadLetterTargetArn = aws_sqs_queue.dl_queue_flow_logs.arn maxReceiveCount = 1 }) policy = { \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": \"*\", \"Action\": \"sqs:SendMessage\", \"Resource\": \"arn:aws:sqs:*:*:s3_event_notification_queue_flow_logs\", \"Condition\": { \"ArnEquals\": { \"aws:SourceArn\": \"${aws_s3_bucket.flow_log_bucket.arn}\" } } } ] } POLICY }# Set up a dead-letter queue for the SQS queue to be used for the input for storing invalid messages resource \"aws_sqs_queue\" \"dl_queue_flow_logs\" { name = \"dl_queue_flow_logs_error_messages\" } resource \"aws_s3_bucket_notification\" \"bucket_notification\" { bucket = aws_s3_bucket.flow_log_bucket.id queue { queue_arn = aws_sqs_queue.queue_flow_logs.arn events = [\"s3:ObjectCreated:*\"] } } output \"sqs_arn\" { description = \"The ARN of the SQS queue\" value = aws_sqs_queue.queue_flow_logs.arn } Configure Splunk Add-on for VPC Flow logs In our previous post, we already setup the splunk environment by installing these two apps.\n Splunk Add-on for Amazon Web Services Splunk App for AWS  If you haven’t already done so, I would suggest please follow the steps 8-13 on previous post\nNext, we need to update the props.conf file on Splunk Search Head for the AWS Add-on app. Location of props.conf will be located at $SPLUNK_HOME/etc/apps/SPLUNK_TA_aws/default/props.conf\n Before\n ##################################\r### AWS CloudWatch Logs ###\r##################################\r[aws:cloudwatchlogs:vpcflow]\rSHOULD_LINEMERGE = false\rEXTRACT-all=^\\s*(\\d{4}-\\d{2}-\\d{2}.\\d{2}:\\d{2}:\\d{2}[.\\d\\w]*)?\\s*(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+) \\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+) \\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\r After\n ##################################\r### AWS CloudWatch Logs ###\r##################################\r[aws:cloudwatchlogs:vpcflow]\rSHOULD_LINEMERGE = false\rEXTRACT-all=^\\s*(\\d{4}-\\d{2}-\\d{2}.\\d{2}:\\d{2}:\\d{2}[.\\d\\w]*)?\\s*(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+) \\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+) \\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+)\\s+(?P[^\\s]+) \\s+(?P[^\\s]+)\\s+(?P[^\\s]+)(?P[^\\s]+)\rLogin to Splunk Instance using the public IP of the EC2 instance Search for the CloudWatch logs using the SPL:\nindex=main sourcetype=aws:cloudwatchlogs:vpcflow | table version vpc_id subnet_id instance_id interface_id account_id type src_ip dest_ip src_port dest_port pkt_srcaddr pkt_dstaddr protocol_code bytes packets start_time end_time vpcflow_action tcp_flags log_status\r Summary: In this post, we ingested custom VPC flow logs to splunk and configured Splunk TA to correctly parse those logs. Questions and suggestions are welcome. Happy Learning.\n References  https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount#Create_admin_credentials_after_starting_Splunk_Enterprise https://docs.splunk.com/Documentation/AddOns/released/AWS/Setuptheadd-on  ","wordCount":"798","inLanguage":"en","datePublished":"2020-05-01T00:00:00Z","dateModified":"2020-05-01T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"},"publisher":{"@type":"Organization","name":"logsec","logo":{"@type":"ImageObject","url":"https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://www.logsec.cloud accesskey=h title="logsec (Alt + H)">logsec</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu>
-<li>
-<a href=https://www.logsec.cloud/ title=posts>
-<span>posts</span>
-</a>
-</li>
-<li>
-<a href=https://www.logsec.cloud/pages/about title=about>
-<span>about</span>
-</a>
-</li>
-<li>
-<a href=https://www.logsec.cloud/search/ title="search (Alt + /)" accesskey=/>
-<span>search</span>
-</a>
-</li>
-</ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs><a href=https://www.logsec.cloud>Home</a>&nbsp;»&nbsp;<a href=https://www.logsec.cloud/posts/>Posts</a></div>
-<h1 class=post-title>
-Ingest VPC Flow Logs with Additional Meta-Data to Splunk
-</h1>
-<div class=post-meta><span title="2020-05-01 00:00:00 +0000 UTC">May 1, 2020</span>&nbsp;·&nbsp;4 min
-</div>
-</header> <div class=toc>
-<details>
-<summary accesskey=c title="(Alt + C)">
-<span class=details>Table of Contents</span>
-</summary>
-<div class=inner><ul><ul>
-<li>
-<a href=#create-a-vpc-flow-log-for-the-existing-splunk-vpc aria-label="Create a VPC Flow log for the existing Splunk VPC">Create a VPC Flow log for the existing Splunk VPC</a></li>
-<li>
-<a href=#create-an-amazon-s3-bucket-for-our-vpc-flow-logs aria-label="Create an Amazon S3 bucket for our VPC Flow Logs.">Create an Amazon S3 bucket for our VPC Flow Logs.</a></li>
-<li>
-<a href=#create-two-sqs-queues aria-label="Create two SQS Queues.">Create two SQS Queues.</a></li>
-<li>
-<a href=#configure-splunk-add-on-for-vpc-flow-logs aria-label="Configure Splunk Add-on for VPC Flow logs">Configure Splunk Add-on for VPC Flow logs</a></li>
-<li>
-<a href=#login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance aria-label="Login to Splunk Instance using the public IP of the EC2 instance">Login to Splunk Instance using the public IP of the EC2 instance</a></li></ul>
-<li>
-<a href=#references aria-label=References>References</a>
-</li>
-</ul>
-</div>
-</details>
-</div>
-<div class=post-content><p>In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s <code>profs.conf</code> file for correct field extraction for the additional VPC flow log fields.</p>
-<p><img loading=lazy src=/images/2020_04_20_1.png alt="Splunk Configuration for VPC flow logs">
-</p>
-<p>All Terraform files are available to download at my <a href=https://github.com/harwinds/logsec_blog_code>GitHub Repo</a>. You just need to edit the <code>terraform.tfvars</code> file and put your AWS <code>ACCESS KEY ID</code> and <code>SECRET ACCESS KEY</code>.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>maven@pluto:~$ tree ./terraform/
-./terraform/
-├── cloudtrail.tf
-├── module.tf
-├── output.tf
-├── provider.tf
-├── splunk
-│   ├── instance_splunk.tf
-│   ├── splunk_iam_role.tf
-│   ├── splunk_iam_role_pol.json
-│   ├── user_data_splunk.sh
-|   ├── sqs_vpc_flow_logs.tf
-│   ├── variables.tf
-|   ├── vpc_flow_log.tf
-│   └── vpc_splunk.tf
-├── sqs_cloudtrail_logs.tf
-├── terraform.tfvars
-├── variables.tf
-└── versions.tf
-</code></pre></div><p>In our <a href=https://www.logsec.cloud/2020/04/20/send-cloudtrail-logs-to-splunk/>previous post</a>, we setup a Splunk environment on AWS using Splunk Enterprise. To the same exisitng infrastructure, we added few things to achieve our today&rsquo;s task. Terrafrom file <code>vpc_flow_log.tf</code> and <code>sqs_vpc_flow_logs.tf</code> in addition to our earlier AWS infrastructure.</p>
-<h3 id=create-a-vpc-flow-log-for-the-existing-splunk-vpc>Create a VPC Flow log for the existing Splunk VPC<a hidden class=anchor aria-hidden=true href=#create-a-vpc-flow-log-for-the-existing-splunk-vpc>#</a></h3>
-<p><a href=https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>VPC Flow Logs</a> is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.</p>
-<p>Default VPC Flow Log format</p>
-<pre tabindex=0><code>&lt;version&gt; &lt;account-id&gt; &lt;interface-id&gt; &lt;srcaddr&gt; &lt;dstaddr&gt; &lt;srcport&gt; &lt;dstport&gt; &lt;protocol&gt; &lt;packets&gt; &lt;bytes&gt; &lt;start&gt; &lt;end&gt; &lt;action&gt; &lt;log-status&gt;
-</code></pre><p>But we will creating a custom format for the flow log record using additonal meta-data fields. This helps us to create flow logs that are specific to our needs, you can add or omit the fields based on your requirements. We will be adding all the available fields for this demo. Additonal fields like <code>instance-id</code> makes an analyst&rsquo;s life much easier during investigation to find the actual source, instead of just relying on <code>srcaddr</code>, as EC2 instances are ephermal in nature, source address/private IP address can later be assigned to a different instance.</p>
-<pre tabindex=0><code>&lt;version&gt; &lt;vpc-id&gt; &lt;subnet-id&gt; &lt;instance-id&gt; &lt;interface-id&gt; &lt;account-id&gt; &lt;type&gt; &lt;srcaddr&gt; &lt;dstaddr&gt;  
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Ingest VPC Flow Logs with Additional Meta-Data to Splunk | logsec</title><meta name=keywords content><meta name=description content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
+All Terraform files are available to download at my GitHub Repo."><meta name=author content><link rel=canonical href=https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/><link crossorigin=anonymous href=/assets/css/stylesheet.bc1149f4a72aa4858d3a9f71462f75e5884ffe8073ea9d6d5761d5663d651e20.css integrity="sha256-vBFJ9KcqpIWNOp9xRi915YhP/oBz6p1tV2HVZj1lHiA=" rel="preload stylesheet" as=style><script defer crossorigin=anonymous src=/assets/js/highlight.acb54fd32bbc1982428b8850317e45d076b95012730a5936667e6bc21777692a.js integrity="sha256-rLVP0yu8GYJCi4hQMX5F0Ha5UBJzClk2Zn5rwhd3aSo=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:title" content="Ingest VPC Flow Logs with Additional Meta-Data to Splunk"><meta property="og:description" content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
+All Terraform files are available to download at my GitHub Repo."><meta property="og:type" content="article"><meta property="og:url" content="https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"><meta property="og:image" content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-05-01T00:00:00+00:00"><meta property="article:modified_time" content="2020-05-01T00:00:00+00:00"><meta property="og:site_name" content="logsec"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta name=twitter:title content="Ingest VPC Flow Logs with Additional Meta-Data to Splunk"><meta name=twitter:description content="In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.
+All Terraform files are available to download at my GitHub Repo."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://www.logsec.cloud/posts/"},{"@type":"ListItem","position":3,"name":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","item":"https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","name":"Ingest VPC Flow Logs with Additional Meta-Data to Splunk","description":"In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk\u0026rsquo;s profs.conf file for correct field extraction for the additional VPC flow log fields.\nAll Terraform files are available to download at my GitHub Repo.","keywords":[],"articleBody":"In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk’s profs.conf file for correct field extraction for the additional VPC flow log fields.\nAll Terraform files are available to download at my GitHub Repo. You just need to edit the terraform.tfvars file and put your AWS ACCESS KEY ID and SECRET ACCESS KEY.\nmaven@pluto:~$ tree ./terraform/ ./terraform/ ├── cloudtrail.tf ├── module.tf ├── output.tf ├── provider.tf ├── splunk │ ├── instance_splunk.tf │ ├── splunk_iam_role.tf │ ├── splunk_iam_role_pol.json │ ├── user_data_splunk.sh | ├── sqs_vpc_flow_logs.tf │ ├── variables.tf | ├── vpc_flow_log.tf │ └── vpc_splunk.tf ├── sqs_cloudtrail_logs.tf ├── terraform.tfvars ├── variables.tf └── versions.tf In our previous post, we setup a Splunk environment on AWS using Splunk Enterprise. To the same exisitng infrastructure, we added few things to achieve our today’s task. Terrafrom file vpc_flow_log.tf and sqs_vpc_flow_logs.tf in addition to our earlier AWS infrastructure.\nCreate a VPC Flow log for the existing Splunk VPC VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.\nDefault VPC Flow Log format\nBut we will creating a custom format for the flow log record using additonal meta-data fields. This helps us to create flow logs that are specific to our needs, you can add or omit the fields based on your requirements. We will be adding all the available fields for this demo. Additonal fields like instance-id makes an analyst’s life much easier during investigation to find the actual source, instead of just relying on srcaddr, as EC2 instances are ephermal in nature, source address/private IP address can later be assigned to a different instance.\n# Flow Logs for the Splunk VPC resource \"aws_flow_log\" \"splunk_vpc_flow_log\" { log_destination = aws_s3_bucket.flow_log_bucket.arn log_destination_type = \"s3\" traffic_type = \"ALL\" vpc_id = aws_vpc.splunk_vpc.id log_format = \"$${version} $${vpc-id} $${subnet-id} $${instance-id} $${interface-id} $${account-id} $${type} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${pkt-srcaddr} $${pkt-dstaddr} $${protocol} $${bytes} $${packets} $${start} $${end} $${action} $${tcp-flags} $${log-status}\" max_aggregation_interval = \"600\" } Please note, a resource-based policy will be created for you and attached to the target bucket.\nCreate an Amazon S3 bucket for our VPC Flow Logs. # S3 bucket for VPC Flow logs resource \"aws_s3_bucket\" \"flow_log_bucket\" { bucket = \"${var.account_id}-lab-vpc-flow-logs\" } output \"splunk_vpc_log_id\" { description = \"The Flow Log ID\" value = aws_flow_log.splunk_vpc_flow_log.id } Create two SQS Queues. Now it’s time to create the SQS queues. Two queues will be required. One queue will be the dead letter queue for error messages to be kicked over to and the other will be the queue used to capture the S3 notifications when a new VPC Flow Log event is sent to the S3 bucket we created in earlier step.\n# Add Amazon S3 Event Notification configuration to SQS Queue resource \"aws_sqs_queue\" \"queue_flow_logs\" { name = \"s3_event_notification_queue_flow_logs\" visibility_timeout_seconds = 300 redrive_policy = jsonencode({ deadLetterTargetArn = aws_sqs_queue.dl_queue_flow_logs.arn maxReceiveCount = 1 }) policy = \u003c","wordCount":"820","inLanguage":"en","datePublished":"2020-05-01T00:00:00Z","dateModified":"2020-05-01T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.logsec.cloud/posts/ingest-vpc-flow-logs-to-splunk/"},"publisher":{"@type":"Organization","name":"logsec","logo":{"@type":"ImageObject","url":"https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://www.logsec.cloud accesskey=h title="logsec (Alt + H)">logsec</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://www.logsec.cloud/ title=posts><span>posts</span></a></li><li><a href=https://www.logsec.cloud/pages/about title=about><span>about</span></a></li><li><a href=https://www.logsec.cloud/search/ title="search (Alt + /)" accesskey=/><span>search</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://www.logsec.cloud>Home</a>&nbsp;»&nbsp;<a href=https://www.logsec.cloud/posts/>Posts</a></div><h1 class=post-title>Ingest VPC Flow Logs with Additional Meta-Data to Splunk</h1><div class=post-meta><span title='2020-05-01 00:00:00 +0000 UTC'>May 1, 2020</span>&nbsp;·&nbsp;4 min</div></header><div class=toc><details><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><ul><li><a href=#create-a-vpc-flow-log-for-the-existing-splunk-vpc aria-label="Create a VPC Flow log for the existing Splunk VPC">Create a VPC Flow log for the existing Splunk VPC</a></li><li><a href=#create-an-amazon-s3-bucket-for-our-vpc-flow-logs aria-label="Create an Amazon S3 bucket for our VPC Flow Logs.">Create an Amazon S3 bucket for our VPC Flow Logs.</a></li><li><a href=#create-two-sqs-queues aria-label="Create two SQS Queues.">Create two SQS Queues.</a></li><li><a href=#configure-splunk-add-on-for-vpc-flow-logs aria-label="Configure Splunk Add-on for VPC Flow logs">Configure Splunk Add-on for VPC Flow logs</a></li><li><a href=#login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance aria-label="Login to Splunk Instance using the public IP of the EC2 instance">Login to Splunk Instance using the public IP of the EC2 instance</a></li></ul><li><a href=#references aria-label=References>References</a></li></ul></div></details></div><div class=post-content><p>In this blog post, we will learn how to ingest VPC flow logs with additional meta-data to Splunk. We will start by creating a VPC flow logs using terraform and pushing the logs to S3. From S3 ingesting these logs to Splunk using Amazon Kinesis. At last, we will make some changes to Splunk&rsquo;s <code>profs.conf</code> file for correct field extraction for the additional VPC flow log fields.</p><p><img loading=lazy src=/images/2020_04_20_1.png alt="Splunk Configuration for VPC flow logs"></p><p>All Terraform files are available to download at my <a href=https://github.com/harwinds/logsec_blog_code>GitHub Repo</a>. You just need to edit the <code>terraform.tfvars</code> file and put your AWS <code>ACCESS KEY ID</code> and <code>SECRET ACCESS KEY</code>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>maven@pluto:~$ tree ./terraform/
+</span></span><span style=display:flex><span>./terraform/
+</span></span><span style=display:flex><span>├── cloudtrail.tf
+</span></span><span style=display:flex><span>├── module.tf
+</span></span><span style=display:flex><span>├── output.tf
+</span></span><span style=display:flex><span>├── provider.tf
+</span></span><span style=display:flex><span>├── splunk
+</span></span><span style=display:flex><span>│   ├── instance_splunk.tf
+</span></span><span style=display:flex><span>│   ├── splunk_iam_role.tf
+</span></span><span style=display:flex><span>│   ├── splunk_iam_role_pol.json
+</span></span><span style=display:flex><span>│   ├── user_data_splunk.sh
+</span></span><span style=display:flex><span>|   ├── sqs_vpc_flow_logs.tf
+</span></span><span style=display:flex><span>│   ├── variables.tf
+</span></span><span style=display:flex><span>|   ├── vpc_flow_log.tf
+</span></span><span style=display:flex><span>│   └── vpc_splunk.tf
+</span></span><span style=display:flex><span>├── sqs_cloudtrail_logs.tf
+</span></span><span style=display:flex><span>├── terraform.tfvars
+</span></span><span style=display:flex><span>├── variables.tf
+</span></span><span style=display:flex><span>└── versions.tf
+</span></span></code></pre></div><p>In our <a href=https://www.logsec.cloud/2020/04/20/send-cloudtrail-logs-to-splunk/>previous post</a>, we setup a Splunk environment on AWS using Splunk Enterprise. To the same exisitng infrastructure, we added few things to achieve our today&rsquo;s task. Terrafrom file <code>vpc_flow_log.tf</code> and <code>sqs_vpc_flow_logs.tf</code> in addition to our earlier AWS infrastructure.</p><h3 id=create-a-vpc-flow-log-for-the-existing-splunk-vpc>Create a VPC Flow log for the existing Splunk VPC<a hidden class=anchor aria-hidden=true href=#create-a-vpc-flow-log-for-the-existing-splunk-vpc>#</a></h3><p><a href=https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>VPC Flow Logs</a> is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC.</p><p>Default VPC Flow Log format</p><pre tabindex=0><code>&lt;version&gt; &lt;account-id&gt; &lt;interface-id&gt; &lt;srcaddr&gt; &lt;dstaddr&gt; &lt;srcport&gt; &lt;dstport&gt; &lt;protocol&gt; &lt;packets&gt; &lt;bytes&gt; &lt;start&gt; &lt;end&gt; &lt;action&gt; &lt;log-status&gt;
+</code></pre><p>But we will creating a custom format for the flow log record using additonal meta-data fields. This helps us to create flow logs that are specific to our needs, you can add or omit the fields based on your requirements. We will be adding all the available fields for this demo. Additonal fields like <code>instance-id</code> makes an analyst&rsquo;s life much easier during investigation to find the actual source, instead of just relying on <code>srcaddr</code>, as EC2 instances are ephermal in nature, source address/private IP address can later be assigned to a different instance.</p><pre tabindex=0><code>&lt;version&gt; &lt;vpc-id&gt; &lt;subnet-id&gt; &lt;instance-id&gt; &lt;interface-id&gt; &lt;account-id&gt; &lt;type&gt; &lt;srcaddr&gt; &lt;dstaddr&gt;  
   &lt;srcport&gt; &lt;dstport&gt; &lt;pkt-srcaddr&gt; &lt;pkt-dstaddr&gt; &lt;protocol&gt; &lt;bytes&gt; &lt;packets&gt; &lt;start&gt; &lt;end&gt; &lt;action&gt; &lt;tcp-flags&gt; &lt;log-status&gt;
-</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=color:#75715e># Flow Logs for the Splunk VPC
-</span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_flow_log&#34;</span> <span style=color:#e6db74>&#34;splunk_vpc_flow_log&#34;</span> {
-  <span style=color:#a6e22e>log_destination</span>          = <span style=color:#a6e22e>aws_s3_bucket</span>.<span style=color:#a6e22e>flow_log_bucket</span>.<span style=color:#a6e22e>arn</span>
-  <span style=color:#a6e22e>log_destination_type</span>     = <span style=color:#e6db74>&#34;s3&#34;</span>
-  <span style=color:#a6e22e>traffic_type</span>             = <span style=color:#e6db74>&#34;ALL&#34;</span>
-  <span style=color:#a6e22e>vpc_id</span>                   = <span style=color:#a6e22e>aws_vpc</span>.<span style=color:#a6e22e>splunk_vpc</span>.<span style=color:#a6e22e>id</span>
-  <span style=color:#a6e22e>log_format</span>               = <span style=color:#e6db74>&#34;$</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>version</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>vpc</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>subnet</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>instance</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>interface</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>account</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>type</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>srcaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dstaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74>  
-</span><span style=color:#e6db74>   $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>srcport</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dstport</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>pkt</span><span style=color:#f92672>-</span><span style=color:#a6e22e>srcaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>pkt</span><span style=color:#f92672>-</span><span style=color:#a6e22e>dstaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>protocol</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>bytes</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>packets</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>start</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>end</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>action</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>tcp</span><span style=color:#f92672>-</span><span style=color:#a6e22e>flags</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span>log<span style=color:#f92672>-</span><span style=color:#a6e22e>status</span><span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
-  <span style=color:#a6e22e>max_aggregation_interval</span> = <span style=color:#e6db74>&#34;600&#34;</span>
-}
-</code></pre></div><blockquote>
-<p>Please note, a resource-based policy will be created for you and attached to the target bucket.</p>
-</blockquote>
-<p><img loading=lazy src=/images/2020_04_30_1.jpg alt="Splunk Configuration for VPC flow logs">
-</p>
-<h3 id=create-an-amazon-s3-bucket-for-our-vpc-flow-logs>Create an Amazon S3 bucket for our VPC Flow Logs.<a hidden class=anchor aria-hidden=true href=#create-an-amazon-s3-bucket-for-our-vpc-flow-logs>#</a></h3>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=color:#75715e># S3 bucket for VPC Flow logs
-</span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_s3_bucket&#34;</span> <span style=color:#e6db74>&#34;flow_log_bucket&#34;</span> {
-  <span style=color:#a6e22e>bucket</span> = <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>var.<span style=color:#a6e22e>account_id</span><span style=color:#e6db74>}</span><span style=color:#e6db74>-lab-vpc-flow-logs&#34;</span>
-}
-<span style=color:#66d9ef>
-</span><span style=color:#66d9ef>output</span> <span style=color:#e6db74>&#34;splunk_vpc_log_id&#34;</span> {
-  <span style=color:#a6e22e>description</span> = <span style=color:#e6db74>&#34;The Flow Log ID&#34;</span>
-  <span style=color:#a6e22e>value</span>       = <span style=color:#a6e22e>aws_flow_log</span>.<span style=color:#a6e22e>splunk_vpc_flow_log</span>.<span style=color:#a6e22e>id</span>
-}
-</code></pre></div><h3 id=create-two-sqs-queues>Create two SQS Queues.<a hidden class=anchor aria-hidden=true href=#create-two-sqs-queues>#</a></h3>
-<p>Now it&rsquo;s time to create the SQS queues. Two queues will be required. One queue will be the dead letter queue for error messages to be kicked over to and the other will be the queue used to capture the S3 notifications when a new VPC Flow Log event is sent to the S3 bucket we created in earlier step.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=color:#75715e># Add Amazon S3 Event Notification configuration to SQS Queue
-</span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_sqs_queue&#34;</span> <span style=color:#e6db74>&#34;queue_flow_logs&#34;</span> {
-  <span style=color:#a6e22e>name</span>                       = <span style=color:#e6db74>&#34;s3_event_notification_queue_flow_logs&#34;</span>
-  <span style=color:#a6e22e>visibility_timeout_seconds</span> = <span style=color:#ae81ff>300</span>
-  <span style=color:#a6e22e>redrive_policy</span> = jsonencode({
-    <span style=color:#a6e22e>deadLetterTargetArn</span> = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>dl_queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
-    <span style=color:#a6e22e>maxReceiveCount</span>     = <span style=color:#ae81ff>1</span>
-  })
-
-  <span style=color:#a6e22e>policy</span> = <span style=color:#f92672>&lt;&lt;POLICY</span><span style=color:#e6db74>
-</span><span style=color:#e6db74>{
-</span><span style=color:#e6db74>  &#34;Version&#34;: &#34;2012-10-17&#34;,
-</span><span style=color:#e6db74>  &#34;Statement&#34;: [
-</span><span style=color:#e6db74>    {
-</span><span style=color:#e6db74>      &#34;Effect&#34;: &#34;Allow&#34;,
-</span><span style=color:#e6db74>      &#34;Principal&#34;: &#34;*&#34;,
-</span><span style=color:#e6db74>      &#34;Action&#34;: &#34;sqs:SendMessage&#34;,
-</span><span style=color:#e6db74>      &#34;Resource&#34;: &#34;arn:aws:sqs:*:*:s3_event_notification_queue_flow_logs&#34;,
-</span><span style=color:#e6db74>      &#34;Condition&#34;: {
-</span><span style=color:#e6db74>        &#34;ArnEquals&#34;: { &#34;aws:SourceArn&#34;: &#34;${aws_s3_bucket.flow_log_bucket.arn}&#34; }
-</span><span style=color:#e6db74>      }
-</span><span style=color:#e6db74>    }
-</span><span style=color:#e6db74>  ]
-</span><span style=color:#e6db74>}
-</span><span style=color:#e6db74></span><span style=color:#f92672>POLICY</span>
-}<span style=color:#75715e>
-</span><span style=color:#75715e>
-</span><span style=color:#75715e># Set up a dead-letter queue for the SQS queue to be used for the input for storing invalid messages
-</span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_sqs_queue&#34;</span> <span style=color:#e6db74>&#34;dl_queue_flow_logs&#34;</span> {
-  <span style=color:#a6e22e>name</span> = <span style=color:#e6db74>&#34;dl_queue_flow_logs_error_messages&#34;</span>
-}
-<span style=color:#66d9ef>
-</span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_s3_bucket_notification&#34;</span> <span style=color:#e6db74>&#34;bucket_notification&#34;</span> {
-  <span style=color:#a6e22e>bucket</span> = <span style=color:#a6e22e>aws_s3_bucket</span>.<span style=color:#a6e22e>flow_log_bucket</span>.<span style=color:#a6e22e>id</span>
-
-  <span style=color:#a6e22e>queue</span> {
-    <span style=color:#a6e22e>queue_arn</span> = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
-    <span style=color:#a6e22e>events</span>    = [<span style=color:#e6db74>&#34;s3:ObjectCreated:*&#34;</span>]
-  }
-}
-<span style=color:#66d9ef>
-</span><span style=color:#66d9ef>output</span> <span style=color:#e6db74>&#34;sqs_arn&#34;</span> {
-  <span style=color:#a6e22e>description</span> = <span style=color:#e6db74>&#34;The ARN of the SQS queue&#34;</span>
-  <span style=color:#a6e22e>value</span>       = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
-}
-</code></pre></div><p><img loading=lazy src=/images/2020_04_30_2.jpg alt="SQS Queue">
-</p>
-<h3 id=configure-splunk-add-on-for-vpc-flow-logs>Configure Splunk Add-on for VPC Flow logs<a hidden class=anchor aria-hidden=true href=#configure-splunk-add-on-for-vpc-flow-logs>#</a></h3>
-<p>In our previous post, we already setup the splunk environment by installing these two apps.</p>
-<ul>
-<li><a href=https://splunkbase.splunk.com/app/1876/>Splunk Add-on for Amazon Web Services</a></li>
-<li><a href=https://splunkbase.splunk.com/app/1274/>Splunk App for AWS</a></li>
-</ul>
-<p>If you haven&rsquo;t already done so, I would suggest please follow the steps 8-13 on <a href=https://www.logsec.cloud/2020/04/20/send-cloudtrail-logs-to-splunk/>previous post</a></p>
-<p>Next, we need to update the <code>props.conf</code> file on Splunk Search Head for the AWS Add-on app. Location of <code>props.conf</code> will be located at $SPLUNK_HOME/etc/apps/SPLUNK_TA_aws/default/props.conf</p>
-<blockquote>
-<p>Before</p>
-</blockquote>
-<pre tabindex=0><code class=language-conf data-lang=conf>##################################
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span><span style=color:#75715e># Flow Logs for the Splunk VPC
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_flow_log&#34;</span> <span style=color:#e6db74>&#34;splunk_vpc_flow_log&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>log_destination</span>          = <span style=color:#a6e22e>aws_s3_bucket</span>.<span style=color:#a6e22e>flow_log_bucket</span>.<span style=color:#a6e22e>arn</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>log_destination_type</span>     = <span style=color:#e6db74>&#34;s3&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>traffic_type</span>             = <span style=color:#e6db74>&#34;ALL&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>vpc_id</span>                   = <span style=color:#a6e22e>aws_vpc</span>.<span style=color:#a6e22e>splunk_vpc</span>.<span style=color:#a6e22e>id</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>log_format</span>               = <span style=color:#e6db74>&#34;$</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>version</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>vpc</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>subnet</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>instance</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>interface</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>account</span><span style=color:#f92672>-</span><span style=color:#a6e22e>id</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>type</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>srcaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dstaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74>  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>srcport</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dstport</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>pkt</span><span style=color:#f92672>-</span><span style=color:#a6e22e>srcaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>pkt</span><span style=color:#f92672>-</span><span style=color:#a6e22e>dstaddr</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>protocol</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>bytes</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>packets</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>start</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>end</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>action</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>tcp</span><span style=color:#f92672>-</span><span style=color:#a6e22e>flags</span><span style=color:#e6db74>}</span><span style=color:#e6db74> $</span><span style=color:#e6db74>${</span>log<span style=color:#f92672>-</span><span style=color:#a6e22e>status</span><span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>max_aggregation_interval</span> = <span style=color:#e6db74>&#34;600&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><blockquote><p>Please note, a resource-based policy will be created for you and attached to the target bucket.</p></blockquote><p><img loading=lazy src=/images/2020_04_30_1.jpg alt="Splunk Configuration for VPC flow logs"></p><h3 id=create-an-amazon-s3-bucket-for-our-vpc-flow-logs>Create an Amazon S3 bucket for our VPC Flow Logs.<a hidden class=anchor aria-hidden=true href=#create-an-amazon-s3-bucket-for-our-vpc-flow-logs>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span><span style=color:#75715e># S3 bucket for VPC Flow logs
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_s3_bucket&#34;</span> <span style=color:#e6db74>&#34;flow_log_bucket&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>bucket</span> = <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>var.<span style=color:#a6e22e>account_id</span><span style=color:#e6db74>}</span><span style=color:#e6db74>-lab-vpc-flow-logs&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>output</span> <span style=color:#e6db74>&#34;splunk_vpc_log_id&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>description</span> = <span style=color:#e6db74>&#34;The Flow Log ID&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>value</span>       = <span style=color:#a6e22e>aws_flow_log</span>.<span style=color:#a6e22e>splunk_vpc_flow_log</span>.<span style=color:#a6e22e>id</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=create-two-sqs-queues>Create two SQS Queues.<a hidden class=anchor aria-hidden=true href=#create-two-sqs-queues>#</a></h3><p>Now it&rsquo;s time to create the SQS queues. Two queues will be required. One queue will be the dead letter queue for error messages to be kicked over to and the other will be the queue used to capture the S3 notifications when a new VPC Flow Log event is sent to the S3 bucket we created in earlier step.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-terraform data-lang=terraform><span style=display:flex><span><span style=color:#75715e># Add Amazon S3 Event Notification configuration to SQS Queue
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_sqs_queue&#34;</span> <span style=color:#e6db74>&#34;queue_flow_logs&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>name</span>                       = <span style=color:#e6db74>&#34;s3_event_notification_queue_flow_logs&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>visibility_timeout_seconds</span> = <span style=color:#ae81ff>300</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>redrive_policy</span> = jsonencode({
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>deadLetterTargetArn</span> = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>dl_queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>maxReceiveCount</span>     = <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>  })
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>policy</span> = <span style=color:#f92672>&lt;&lt;POLICY</span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>{
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#34;Version&#34;: &#34;2012-10-17&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#34;Statement&#34;: [
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      &#34;Effect&#34;: &#34;Allow&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      &#34;Principal&#34;: &#34;*&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      &#34;Action&#34;: &#34;sqs:SendMessage&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      &#34;Resource&#34;: &#34;arn:aws:sqs:*:*:s3_event_notification_queue_flow_logs&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      &#34;Condition&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;ArnEquals&#34;: { &#34;aws:SourceArn&#34;: &#34;${aws_s3_bucket.flow_log_bucket.arn}&#34; }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  ]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#f92672>POLICY</span>
+</span></span><span style=display:flex><span>}<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e># Set up a dead-letter queue for the SQS queue to be used for the input for storing invalid messages
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_sqs_queue&#34;</span> <span style=color:#e6db74>&#34;dl_queue_flow_logs&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>name</span> = <span style=color:#e6db74>&#34;dl_queue_flow_logs_error_messages&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;aws_s3_bucket_notification&#34;</span> <span style=color:#e6db74>&#34;bucket_notification&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>bucket</span> = <span style=color:#a6e22e>aws_s3_bucket</span>.<span style=color:#a6e22e>flow_log_bucket</span>.<span style=color:#a6e22e>id</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>queue</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>queue_arn</span> = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>events</span>    = [<span style=color:#e6db74>&#34;s3:ObjectCreated:*&#34;</span>]
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>output</span> <span style=color:#e6db74>&#34;sqs_arn&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>description</span> = <span style=color:#e6db74>&#34;The ARN of the SQS queue&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>value</span>       = <span style=color:#a6e22e>aws_sqs_queue</span>.<span style=color:#a6e22e>queue_flow_logs</span>.<span style=color:#a6e22e>arn</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><img loading=lazy src=/images/2020_04_30_2.jpg alt="SQS Queue"></p><h3 id=configure-splunk-add-on-for-vpc-flow-logs>Configure Splunk Add-on for VPC Flow logs<a hidden class=anchor aria-hidden=true href=#configure-splunk-add-on-for-vpc-flow-logs>#</a></h3><p>In our previous post, we already setup the splunk environment by installing these two apps.</p><ul><li><a href=https://splunkbase.splunk.com/app/1876/>Splunk Add-on for Amazon Web Services</a></li><li><a href=https://splunkbase.splunk.com/app/1274/>Splunk App for AWS</a></li></ul><p>If you haven&rsquo;t already done so, I would suggest please follow the steps 8-13 on <a href=https://www.logsec.cloud/2020/04/20/send-cloudtrail-logs-to-splunk/>previous post</a></p><p>Next, we need to update the <code>props.conf</code> file on Splunk Search Head for the AWS Add-on app. Location of <code>props.conf</code> will be located at $SPLUNK_HOME/etc/apps/SPLUNK_TA_aws/default/props.conf</p><blockquote><p>Before</p></blockquote><pre tabindex=0><code class=language-conf data-lang=conf>##################################
 ###    AWS CloudWatch Logs     ###
 ##################################
 
@@ -224,10 +97,7 @@ SHOULD_LINEMERGE = false
 EXTRACT-all=^\s*(\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}[.\d\w]*)?\s*(?P&lt;version&gt;[^\s]+)\s+(?P&lt;account_id&gt;[^\s]+)\s+(?P&lt;interface_id&gt;[^\s]+)\s+(?P&lt;src_ip&gt;[^\s]+)  
  \s+(?P&lt;dest_ip&gt;[^\s]+)\s+(?P&lt;src_port&gt;[^\s]+)\s+(?P&lt;dest_port&gt;[^\s]+)\s+(?P&lt;protocol_code&gt;[^\s]+)\s+(?P&lt;packets&gt;[^\s]+)\s+(?P&lt;bytes&gt;[^\s]+)\s+(?P&lt;start_time&gt;[^\s]+)  
  \s+(?P&lt;end_time&gt;[^\s]+)\s+(?P&lt;vpcflow_action&gt;[^\s]+)\s+(?P&lt;log_status&gt;[^\s]+)
-</code></pre><blockquote>
-<p>After</p>
-</blockquote>
-<pre tabindex=0><code class=language-conf data-lang=conf>##################################
+</code></pre><blockquote><p>After</p></blockquote><pre tabindex=0><code class=language-conf data-lang=conf>##################################
 ###    AWS CloudWatch Logs     ###
 ##################################
 
@@ -237,44 +107,11 @@ EXTRACT-all=^\s*(\d{4}-\d{2}-\d{2}.\d{2}:\d{2}:\d{2}[.\d\w]*)?\s*(?P&lt;version&
  \s+(?P&lt;interface_id&gt;[^\s]+)\s+(?P&lt;account_id&gt;[^\s]+)\s+(?P&lt;type&gt;[^\s]+)\s+(?P&lt;src_ip&gt;[^\s]+)\s+(?P&lt;dest_ip&gt;[^\s]+)\s+(?P&lt;src_port&gt;[^\s]+)\s+(?P&lt;dest_port&gt;[^\s]+)  
  \s+(?P&lt;pkt_srcaddr&gt;[^\s]+)\s+(?P&lt;pkt_dstaddr&gt;[^\s]+)\s+(?P&lt;protocol_code&gt;[^\s]+)\s+(?P&lt;bytes&gt;[^\s]+)\s+(?P&lt;packets&gt;[^\s]+)\s+(?P&lt;start_time&gt;[^\s]+)\s+(?P&lt;end_time&gt;[^\s]+)  
  \s+(?P&lt;vpcflow_action&gt;[^\s]+)\s+(?P&lt;tcp_flags&gt;[^\s]+)(?P&lt;log_status&gt;[^\s]+)
-</code></pre><h3 id=login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance>Login to Splunk Instance using the public IP of the EC2 instance<a hidden class=anchor aria-hidden=true href=#login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance>#</a></h3>
-<p>Search for the CloudWatch logs using the SPL:</p>
-<pre tabindex=0><code>index=main sourcetype=aws:cloudwatchlogs:vpcflow 
+</code></pre><h3 id=login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance>Login to Splunk Instance using the public IP of the EC2 instance<a hidden class=anchor aria-hidden=true href=#login-to-splunk-instance-using-the-public-ip-of-the-ec2-instance>#</a></h3><p>Search for the CloudWatch logs using the SPL:</p><pre tabindex=0><code>index=main sourcetype=aws:cloudwatchlogs:vpcflow 
 | table version vpc_id subnet_id instance_id interface_id account_id type src_ip dest_ip src_port dest_port pkt_srcaddr pkt_dstaddr protocol_code bytes  
  packets start_time end_time vpcflow_action tcp_flags log_status
-</code></pre><hr>
-<p><strong>Summary</strong>: In this post, we ingested custom VPC flow logs to splunk and configured Splunk TA to correctly parse those logs. Questions and suggestions are welcome. Happy Learning.</p>
-<hr>
-<h2 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h2>
-<ul>
-<li><a href=https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount#Create_admin_credentials_after_starting_Splunk_Enterprise>https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount#Create_admin_credentials_after_starting_Splunk_Enterprise</a></li>
-<li><a href=https://docs.splunk.com/Documentation/AddOns/released/AWS/Setuptheadd-on>https://docs.splunk.com/Documentation/AddOns/released/AWS/Setuptheadd-on</a></li>
-</ul>
-</div>
-<footer class=post-footer>
-<nav class=paginav>
-<a class=prev href=https://www.logsec.cloud/posts/git-notes/>
-<span class=title>« Prev Page</span>
-<br>
-<span>Git Notes</span>
-</a>
-<a class=next href=https://www.logsec.cloud/posts/ingest-cloudtrail-logs-to-splunk/>
-<span class=title>Next Page »</span>
-<br>
-<span>Ingest AWS CloudTrail logs to Splunk</span>
-</a>
-</nav>
-</footer><script src=https://giscus.app/client.js data-repo=harwinds/logsec data-repo-id=R_kgDOGjnARg data-category=Announcements data-category-id=DIC_kwDOGjnARs4CAWru data-mapping=title data-reactions-enabled=1 data-emit-metadata=0 data-theme=dark data-lang=en crossorigin=anonymous async></script>
-</article>
-</main>
-<footer class=footer>
-<span>&copy; 2022 <a href=https://www.logsec.cloud>logsec</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</a>
-<script>let menu=document.getElementById('menu');menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-<script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerText='copy';function d(){a.innerText='copied!',setTimeout(()=>{a.innerText='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script>
-</body>
-</html>
+</code></pre><hr><p><strong>Summary</strong>: In this post, we ingested custom VPC flow logs to splunk and configured Splunk TA to correctly parse those logs. Questions and suggestions are welcome. Happy Learning.</p><hr><h2 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h2><ul><li><a href=https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount#Create_admin_credentials_after_starting_Splunk_Enterprise>https://docs.splunk.com/Documentation/Splunk/latest/Security/Secureyouradminaccount#Create_admin_credentials_after_starting_Splunk_Enterprise</a></li><li><a href=https://docs.splunk.com/Documentation/AddOns/released/AWS/Setuptheadd-on>https://docs.splunk.com/Documentation/AddOns/released/AWS/Setuptheadd-on</a></li></ul></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=prev href=https://www.logsec.cloud/posts/git-notes/><span class=title>« Prev</span><br><span>Git Notes</span></a>
+<a class=next href=https://www.logsec.cloud/posts/ingest-cloudtrail-logs-to-splunk/><span class=title>Next »</span><br><span>Ingest AWS CloudTrail logs to Splunk</span></a></nav></footer><script src=https://giscus.app/client.js data-repo=harwinds/logsec data-repo-id=R_kgDOGjnARg data-category=Announcements data-category-id=DIC_kwDOGjnARs4CAWru data-mapping=title data-reactions-enabled=1 data-emit-metadata=0 data-theme=dark data-lang=en crossorigin=anonymous async></script></article></main><footer class=footer><span>&copy; 2022 <a href=https://www.logsec.cloud>logsec</a></span>
+<span>Powered:
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

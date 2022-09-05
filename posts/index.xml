@@ -9,7 +9,16 @@
       <link>https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 28 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 01 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Configure cross-account access from an EC2 Instance to an AWS CodeCommit repo using roles</title>
+      <link>https://www.logsec.cloud/posts/cross-account-access-codecommit-repo/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.logsec.cloud/posts/cross-account-access-codecommit-repo/</guid>
+      <description>You can configure access to CodeCommit repositories for IAM Role attached to an EC2 Instance in another AWS account. This is often referred to as cross-account access. This section provides an example and instructions for configuring cross-account access for a repo named SharedDemoRepo in the US East (Ohio) Region in an AWS account (referred to as AccountA) to an IAM Role/Instance Profile attached to an EC2 Instance in another AWS account (referred to as AccountB).</description>
+    </item>
+    
     <item>
       <title>Upload CSV Data to Elasticsearch</title>
       <link>https://www.logsec.cloud/posts/upload-csv-to-elastic/</link>
@@ -28,7 +37,7 @@ To detect outbound traffic going to IOC&amp;rsquo;s related to Log4j, needed to 
       
       <guid>https://www.logsec.cloud/posts/git-workflow-automation/</guid>
       <description>A quick blog post to share a bash script that I almost use daily to automate the basic GitHub &amp;ldquo;commit and push&amp;rdquo; prcoess. Steps to reproduce:
- Create a file, for example codecommit.sh and copy/paste the content below:  #!/bin/bash  RESET=&amp;#34;\033[0m&amp;#34; BOLD=&amp;#34;\033[1m&amp;#34; YELLOW=&amp;#34;\033[38;5;11m&amp;#34; #Get the argument message #read -p &amp;#34;Add Commit message: &amp;#34; message read -p &amp;#34;$(echo -e $BOLD$YELLOW&amp;#34;Add Commit message: &amp;#34;$RESET)&amp;#34; message #Stage all changes git add . #Commit the file(s) git commit -m &amp;#34;$message&amp;#34; echo &amp;#34;Added the commit with message: &amp;#39;$message&amp;#39;&amp;#34; #Get current branch and push changes current_branch=$(git branch --show-current) git push origin &amp;#34;$current_branch&amp;#34; #echo &amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34; echo -e $BOLD$YELLOW&amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34;$RESET  Move it to the location /usr/local/bin to make this shell script global.</description>
+Create a file, for example codecommit.sh and copy/paste the content below: #!/bin/bash RESET=&amp;#34;\033[0m&amp;#34; BOLD=&amp;#34;\033[1m&amp;#34; YELLOW=&amp;#34;\033[38;5;11m&amp;#34; #Get the argument message #read -p &amp;#34;Add Commit message: &amp;#34; message read -p &amp;#34;$(echo -e $BOLD$YELLOW&amp;#34;Add Commit message: &amp;#34;$RESET)&amp;#34; message #Stage all changes git add . #Commit the file(s) git commit -m &amp;#34;$message&amp;#34; echo &amp;#34;Added the commit with message: &amp;#39;$message&amp;#39;&amp;#34; #Get current branch and push changes current_branch=$(git branch --show-current) git push origin &amp;#34;$current_branch&amp;#34; #echo &amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34; echo -e $BOLD$YELLOW&amp;#34;Pushed changes to &amp;#39;$current_branch&amp;#39; branch&amp;#34;$RESET Move it to the location /usr/local/bin to make this shell script global.</description>
     </item>
     
     <item>
@@ -87,7 +96,7 @@ Scenario 1: Using the AWS Web Console Create a S3 bucket and Go to &amp;ldquo;Pe
       
       <guid>https://www.logsec.cloud/posts/investigating-on-aws/</guid>
       <description>During the past week, we detected some suspicious activities across multiple AWS accounts in one of our client&amp;rsquo;s environment. These activites seems related to scanning activities from a bad actor on S3 buckets. One of the sample logs from S3 Access logs:
-84fd7086179626a759fb59a0252a26d26dc1685e30f0ab922266b5abace8f998 &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket [01/Jun/2020:13:27:34 +0000] 10.247.13.187 arn:aws:iam::799199334739:user/starling-ladyblackhawk-iad-prod 9WDX6MBZFQ6Z6RDR REST.HEAD.BUCKET - &amp;quot;HEAD / HTTP/1.1&amp;quot; 403 AccessDenied 243 - 9 - &amp;quot;-&amp;quot; &amp;quot;AWSConfig&amp;quot; - wFvPfIaSbdpcnNMdcTj+BNWn00r3OfqHV8sTt8gUXMzLA7O/MiWg+NPckix2TThK15V/p1JigVc= SigV4 ECDHE-RSA-AES128-SHA AuthHeader &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket.s3.amazonaws.com TLSv1.2First thing that got our attention to this specific log is the username starling-ladyblack-iad-prod, question to ask at this stage is this a rouge IAM user?</description>
+84fd7086179626a759fb59a0252a26d26dc1685e30f0ab922266b5abace8f998 &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket [01/Jun/2020:13:27:34 +0000] 10.247.13.187 arn:aws:iam::799199334739:user/starling-ladyblackhawk-iad-prod 9WDX6MBZFQ6Z6RDR REST.HEAD.BUCKET - &amp;#34;HEAD / HTTP/1.1&amp;#34; 403 AccessDenied 243 - 9 - &amp;#34;-&amp;#34; &amp;#34;AWSConfig&amp;#34; - wFvPfIaSbdpcnNMdcTj+BNWn00r3OfqHV8sTt8gUXMzLA7O/MiWg+NPckix2TThK15V/p1JigVc= SigV4 ECDHE-RSA-AES128-SHA AuthHeader &amp;lt;AWS-ACCOUNT-ID&amp;gt;-config-org-bucket.s3.amazonaws.com TLSv1.2 First thing that got our attention to this specific log is the username starling-ladyblack-iad-prod, question to ask at this stage is this a rouge IAM user?</description>
     </item>
     
     <item>
