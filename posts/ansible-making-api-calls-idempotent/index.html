@@ -1,0 +1,150 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Ansible - Making API calls idempotent | logsec</title><meta name=keywords content><meta name=description content="This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
+We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions."><meta name=author content><link rel=canonical href=https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/><link crossorigin=anonymous href=/assets/css/stylesheet.bccfefac377bc340f06c260aed1bddf49a4354816d7c570d6aac75a997986c95.css integrity="sha256-vM/vrDd7w0DwbCYK7Rvd9JpDVIFtfFcNaqx1qZeYbJU=" rel="preload stylesheet" as=style><script defer crossorigin=anonymous src=/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG+9vmJ0cTS+ovo0FeA=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=16x16 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=icon type=image/png sizes=32x32 href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=apple-touch-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><link rel=mask-icon href=https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:title" content="Ansible - Making API calls idempotent"><meta property="og:description" content="This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
+We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions."><meta property="og:type" content="article"><meta property="og:url" content="https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/"><meta property="og:image" content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta property="article:section" content="posts"><meta property="article:published_time" content="2023-01-28T00:00:00+00:00"><meta property="article:modified_time" content="2023-01-28T00:00:00+00:00"><meta property="og:site_name" content="logsec"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E"><meta name=twitter:title content="Ansible - Making API calls idempotent"><meta name=twitter:description content="This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
+We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://www.logsec.cloud/posts/"},{"@type":"ListItem","position":3,"name":"Ansible - Making API calls idempotent","item":"https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Ansible - Making API calls idempotent","name":"Ansible - Making API calls idempotent","description":"This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.\nWe all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions.","keywords":[],"articleBody":"This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.\nWe all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions. However, sometimes making the tasks idempotent requires additional work, for instance, in URI modulde we have to decide when to use POST or PUT calls.\nDifference between POST and PUT? Both POST and PUT are used to send data to a server to create/update a resource. The difference between POST and PUT is that PUT requests are idempotent. That is, calling the same PUT request multiple times will always produce the same result. In contrast, calling a POST request repeatedly have side effects of creating the same resource multiple times or failing with an error message that the resource already exists.\nLet’s start with the playbook:\n--- - name: Kibana Fleet tasks hosts: localhost connection: local roles: - fleet Directory Stucture of the fleet role:\nfleet/ ├── tasks # Includes Ansible tasks using the URI module ├── policies # Fleet policies └── vars # Variables Variables main.yml in the vars directory\n--- kibana_url: https://:5601 fleet_username: fleet_password: force_basic_auth: true validate_certs: false policies/elasticagent.json\n{ \"name\": \"elasticagent\", \"description\": \"Elastic-Agent Endpoints\", \"namespace\": \"default\", \"monitoring_enabled\": [ \"logs\", \"metrics\" ] } Below are the List Policies under the tasks directory. We are making the GET call first to list the exisitng policies, so that later we can make a decisin based on the response of GET call, if we need to create a new policy or update an existing policy. For the new policies, we have created a new variable called policies_to_create based on the template files in the directory called policies.\nLater, we ran a delta using the difference filter between the two two variables policies_to_create \u0026 policies_to_update. Result of this will the policies that we need to create.\nMore about difference filter: https://docs.ansible.com/ansible/devel/collections/ansible/builtin/difference_filter.html\n--- - name: List Policies ansible.builtin.uri: url: \"{{ kibana_url }}/api/fleet/agent_policies\" method: GET body_format: json status_code: [200] user: \"{{ fleet_username }}\" password: \"{{ fleet_password }}\" force_basic_auth: \"{{ force_basic_auth }}\" validate_certs: \"{{ validate_certs }}\" headers: kbn-xsrf: \"true\" ignore_errors: true register: list_policies_response - name: Extract all policies from the list_policies_response ansible.builtin.set_fact: policies: \"{{ policies | default({}) | combine( { item.name: item.id } ) }}\" policies_to_update: \"{{ policies_to_update | default([]) + [ item.name ] }}\" with_items: \"{{ list_policies_response | json_query('json.items') }}\" - name: Extract all policies_to_create from the folder \"{{role_path}}/policies/*.json\" ansible.builtin.set_fact: policies_to_create: \"{{ policies_to_create | default([]) + [ item | basename | splitext | first ] }}\" with_fileglob: \"{{role_path}}/policies/*.json\" - name: Gather all policies that need to be created ansible.builtin.set_fact: policies_to_create: \"{{ policies_to_create | difference(policies_to_update) | list }}\" when: - policies_to_update is defined - policies_to_update != [] Create or Update Policies Based on the two variables policies_to_create \u0026 policies_to_update, we groups our create and update tasks into two blocks.\n--- - name: Print required variables ansible.builtin.debug: msg: - \"policies_to_create -- {{ policies_to_create | default([]) }}\" - \"policies_to_update -- {{ policies_to_update | default([]) }}\" - name: A group of tasks to be executed when policies_to_create is defined block: - name: Create Agent Policies ansible.builtin.uri: url: \"{{ kibana_url }}/api/fleet/agent_policies\" method: POST body_format: json body: \"{{ lookup('file','{{ role_path }}/policies/{{ item }}.json') }}\" status_code: [200] user: \"{{ fleet_username }}\" password: \"{{ fleet_password }}\" force_basic_auth: \"{{ force_basic_auth }}\" validate_certs: \"{{ validate_certs }}\" headers: kbn-xsrf: \"true\" ignore_errors: true register: agent_policies_response with_items: \"{{ policies_to_create }}\" - name: Response ansible.builtin.debug: msg: \"{{ agent_policies_response }}\" - name: Extract the policy_ids from the agent_policies_response variable ansible.builtin.set_fact: policy_ids: \"{{ policy_ids | default({}) | combine ({item.0 : item.1}) }}\" with_together: - \"{{ agent_policies_response | json_query('results[*].json.item.name') }}\" - \"{{ agent_policies_response | json_query('results[*].json.item.id') }}\" - name: Debug ansible.builtin.debug: msg: \"POLICY IDS - {{ policy_ids }}\" when: - policies_to_create is defined - policies_to_create != [] - name: A group of tasks to be executed when policies_to_update is defined block: - name: Update Agent Policies ansible.builtin.uri: url: \"{{ kibana_url }}/api/fleet/agent_policies/{{ policies | json_query(item) }}\" method: PUT body_format: json body: \"{{ lookup('file','{{ role_path }}/policies/{{ item }}.json') }}\" status_code: [200] user: \"{{ fleet_username }}\" password: \"{{ fleet_password }}\" force_basic_auth: \"{{ force_basic_auth }}\" validate_certs: \"{{ validate_certs }}\" headers: kbn-xsrf: \"true\" ignore_errors: true register: agent_policies_response with_items: \"{{ policies_to_update }}\" - name: Response ansible.builtin.debug: msg: \"{{ agent_policies_response }}\" - name: Extract the policy_ids from the agent_policies_response variable ansible.builtin.set_fact: policy_ids: \"{{ policy_ids | default({}) | combine ({item.0 : item.1}) }}\" with_together: - \"{{ agent_policies_response | json_query('results[*].json.item.name') }}\" - \"{{ agent_policies_response | json_query('results[*].json.item.id') }}\" - name: Debug ansible.builtin.debug: msg: \"POLICY IDS - {{ policy_ids }}\" when: - policies_to_update is defined - policies_to_update != [] Note: As we can see there are some repeated code between two blocks for set_fact policy_ids, I tried to move this code outside of the block to keep the code clean, but the variable value is still being updated when the tasks are being skipped.\nAnsible documentation on condtionals states “Ansible always registers something in a registered variable for every host, even on hosts where a task fails or Ansible skips a task because a condition is not met.”\nIs this the best approach to make API calls idempotent, not sure. These are several things can be improved, but for now this is good enough for our use case. One of the short-coming is if a user creates a Fleet policy manually, and we run this role again, it will fail, as it will plan to update the existing policy, but will not find the policy in the policies directory or in the code itself.\nHope you find this post helpful.\nReferences HTTP Request Methods Kibana Fleet APIs ","wordCount":"963","inLanguage":"en","datePublished":"2023-01-28T00:00:00Z","dateModified":"2023-01-28T00:00:00Z","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/"},"publisher":{"@type":"Organization","name":"logsec","logo":{"@type":"ImageObject","url":"https://www.logsec.cloud/%3Clink%20/%20abs%20url%3E"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://www.logsec.cloud accesskey=h title="logsec (Alt + H)">logsec</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://www.logsec.cloud/ title=posts><span>posts</span></a></li><li><a href=https://www.logsec.cloud/pages/about title=about><span>about</span></a></li><li><a href=https://www.logsec.cloud/search/ title="search (Alt + /)" accesskey=/><span>search</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://www.logsec.cloud>Home</a>&nbsp;»&nbsp;<a href=https://www.logsec.cloud/posts/>Posts</a></div><h1 class=post-title>Ansible - Making API calls idempotent</h1><div class=post-meta><span title='2023-01-28 00:00:00 +0000 UTC'>January 28, 2023</span>&nbsp;·&nbsp;5 min</div></header><div class=post-content><p>This article is about the Ansible <a href=https://docs.ansible.com/ansible/latest/collections/ansible/builtin/uri_module.html>URI module</a>. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.</p><p>We all know Ansible modules are <a href=https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html#term-Idempotency>ideompotent</a> in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions. However, sometimes making the tasks idempotent requires additional work, for instance, in URI modulde we have to decide when to use POST or PUT calls.</p><h3 id=difference-between-post-and-put>Difference between POST and PUT?<a hidden class=anchor aria-hidden=true href=#difference-between-post-and-put>#</a></h3><p>Both <code>POST</code> and <code>PUT</code> are used to send data to a server to create/update a resource. The difference between POST and PUT is that PUT requests are idempotent. That is, calling the same PUT request multiple times will always produce the same result. In contrast, calling a POST request repeatedly have side effects of creating the same resource multiple times or failing with an error message that the resource already exists.</p><p>Let&rsquo;s start with the playbook:</p><pre tabindex=0><code>---
+- name: Kibana Fleet tasks
+  hosts: localhost
+  connection: local
+  roles:
+    - fleet
+</code></pre><p>Directory Stucture of the <code>fleet</code> role:</p><pre tabindex=0><code>fleet/
+├── tasks       # Includes Ansible tasks using the URI module
+├── policies    # Fleet policies
+└── vars        # Variables
+</code></pre><p>Variables <code>main.yml</code> in the vars directory</p><pre tabindex=0><code>---
+kibana_url: https://&lt;KIBANA_URL&gt;:5601
+
+fleet_username: &lt;FLEET_USERNAME&gt;
+fleet_password: &lt;FLEET_PASSWORD&gt;
+
+force_basic_auth: true
+validate_certs: false
+</code></pre><p>policies/elasticagent.json</p><pre tabindex=0><code>{
+    &#34;name&#34;: &#34;elasticagent&#34;,
+    &#34;description&#34;: &#34;Elastic-Agent Endpoints&#34;,
+    &#34;namespace&#34;: &#34;default&#34;,
+    &#34;monitoring_enabled&#34;: [
+        &#34;logs&#34;,
+        &#34;metrics&#34;
+    ]
+}
+</code></pre><p>Below are the List Policies under the <code>tasks</code> directory. We are making the <code>GET</code> call first to list the exisitng policies, so that later we can make a decisin based on the response of GET call, if we need to create a new policy or update an existing policy. For the new policies, we have created a new variable called <code>policies_to_create</code> based on the template files in the directory called policies.</p><p>Later, we ran a delta using the difference filter between the two two variables <code>policies_to_create</code> & <code>policies_to_update</code>. Result of this will the policies that we need to create.</p><p>More about difference filter: <a href=https://docs.ansible.com/ansible/devel/collections/ansible/builtin/difference_filter.html>https://docs.ansible.com/ansible/devel/collections/ansible/builtin/difference_filter.html</a></p><pre tabindex=0><code>---
+- name: List Policies
+  ansible.builtin.uri:
+    url: &#34;{{ kibana_url }}/api/fleet/agent_policies&#34;
+    method: GET
+    body_format: json
+    status_code: [200]
+    user: &#34;{{ fleet_username }}&#34;
+    password: &#34;{{ fleet_password }}&#34;
+    force_basic_auth: &#34;{{ force_basic_auth }}&#34;
+    validate_certs: &#34;{{ validate_certs }}&#34;
+    headers:
+      kbn-xsrf: &#34;true&#34;
+  ignore_errors: true
+  register: list_policies_response
+
+- name: Extract all policies from the list_policies_response
+  ansible.builtin.set_fact:
+    policies: &#34;{{ policies | default({}) | combine( { item.name: item.id } ) }}&#34;
+    policies_to_update: &#34;{{ policies_to_update | default([]) + [ item.name ] }}&#34;
+  with_items: &#34;{{ list_policies_response | json_query(&#39;json.items&#39;) }}&#34;
+
+- name: Extract all policies_to_create from the folder &#34;{{role_path}}/policies/*.json&#34;
+  ansible.builtin.set_fact:
+    policies_to_create: &#34;{{ policies_to_create | default([]) + [ item | basename | splitext | first ] }}&#34;
+  with_fileglob: &#34;{{role_path}}/policies/*.json&#34;
+
+- name: Gather all policies that need to be created
+  ansible.builtin.set_fact:
+    policies_to_create: &#34;{{ policies_to_create  | difference(policies_to_update) | list }}&#34;
+  when:
+    - policies_to_update is defined
+    - policies_to_update != []
+</code></pre><ul><li>Create or Update Policies</li></ul><p>Based on the two variables <code>policies_to_create</code> & <code>policies_to_update</code>, we groups our create and update tasks into two blocks.</p><pre tabindex=0><code>---
+- name: Print required variables
+  ansible.builtin.debug:
+    msg:
+     - &#34;policies_to_create -- {{ policies_to_create | default([]) }}&#34;
+     - &#34;policies_to_update -- {{ policies_to_update | default([]) }}&#34;
+
+- name: A group of tasks to be executed when policies_to_create is defined
+  block:
+    - name: Create Agent Policies
+      ansible.builtin.uri:
+        url: &#34;{{ kibana_url }}/api/fleet/agent_policies&#34;
+        method: POST
+        body_format: json
+        body: &#34;{{ lookup(&#39;file&#39;,&#39;{{ role_path }}/policies/{{ item }}.json&#39;) }}&#34;
+        status_code: [200]
+        user: &#34;{{ fleet_username }}&#34;
+        password: &#34;{{ fleet_password }}&#34;
+        force_basic_auth: &#34;{{ force_basic_auth }}&#34;
+        validate_certs: &#34;{{ validate_certs }}&#34;
+        headers:
+          kbn-xsrf: &#34;true&#34;
+      ignore_errors: true
+      register: agent_policies_response
+      with_items: &#34;{{ policies_to_create }}&#34;
+
+    - name: Response
+      ansible.builtin.debug:
+        msg: &#34;{{ agent_policies_response }}&#34;
+
+    - name: Extract the policy_ids from the agent_policies_response variable
+      ansible.builtin.set_fact:
+        policy_ids: &#34;{{ policy_ids | default({}) | combine ({item.0 : item.1}) }}&#34;
+      with_together:
+        - &#34;{{ agent_policies_response | json_query(&#39;results[*].json.item.name&#39;) }}&#34;
+        - &#34;{{ agent_policies_response | json_query(&#39;results[*].json.item.id&#39;) }}&#34;
+
+    - name: Debug
+      ansible.builtin.debug:
+        msg: &#34;POLICY IDS - {{ policy_ids }}&#34;
+
+  when:
+    - policies_to_create is defined
+    - policies_to_create != []
+
+- name: A group of tasks to be executed when policies_to_update is defined
+  block:
+    - name: Update Agent Policies
+      ansible.builtin.uri:
+        url: &#34;{{ kibana_url }}/api/fleet/agent_policies/{{ policies | json_query(item) }}&#34;
+        method: PUT
+        body_format: json
+        body: &#34;{{ lookup(&#39;file&#39;,&#39;{{ role_path }}/policies/{{ item }}.json&#39;) }}&#34;
+        status_code: [200]
+        user: &#34;{{ fleet_username }}&#34;
+        password: &#34;{{ fleet_password }}&#34;
+        force_basic_auth: &#34;{{ force_basic_auth }}&#34;
+        validate_certs: &#34;{{ validate_certs }}&#34;
+        headers:
+          kbn-xsrf: &#34;true&#34;
+      ignore_errors: true
+      register: agent_policies_response
+      with_items: &#34;{{ policies_to_update }}&#34;
+
+    - name: Response
+      ansible.builtin.debug:
+        msg: &#34;{{ agent_policies_response }}&#34;
+
+    - name: Extract the policy_ids from the agent_policies_response variable
+      ansible.builtin.set_fact:
+        policy_ids: &#34;{{ policy_ids | default({}) | combine ({item.0 : item.1}) }}&#34;
+      with_together:
+        - &#34;{{ agent_policies_response | json_query(&#39;results[*].json.item.name&#39;) }}&#34;
+        - &#34;{{ agent_policies_response | json_query(&#39;results[*].json.item.id&#39;) }}&#34;
+
+    - name: Debug
+      ansible.builtin.debug:
+        msg: &#34;POLICY IDS - {{ policy_ids }}&#34;
+
+  when:
+    - policies_to_update is defined
+    - policies_to_update != []
+</code></pre><blockquote><p>Note: As we can see there are some repeated code between two blocks for set_fact <code>policy_ids</code>, I tried to move this code outside of the block to keep the code clean, but the variable value is still being updated when the tasks are being skipped.</p></blockquote><p>Ansible documentation on <a href=https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html>condtionals</a> states &ldquo;Ansible always registers something in a registered variable for every host, even on hosts where a task fails or Ansible skips a task because a condition is not met.&rdquo;</p><p>Is this the best approach to make API calls idempotent, not sure. These are several things can be improved, but for now this is good enough for our use case. One of the short-coming is if a user creates a Fleet policy manually, and we run this role again, it will fail, as it will plan to update the existing policy, but will not find the policy in the policies directory or in the code itself.</p><p>Hope you find this post helpful.</p><hr><h3 id=references>References<a hidden class=anchor aria-hidden=true href=#references>#</a></h3><ul><li><a href=https://www.w3schools.com/tags/ref_httpmethods.asp>HTTP Request Methods</a></li><li><a href="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/elastic/kibana/8.6/x-pack/plugins/fleet/common/openapi/bundled.json">Kibana Fleet APIs</a></li></ul></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=next href=https://www.logsec.cloud/posts/cross-account-access-codecommit-repo/><span class=title>Next »</span><br><span>Configure cross-account access from an EC2 Instance to an AWS CodeCommit repo using roles</span></a></nav></footer><script src=https://giscus.app/client.js data-repo=harwinds/logsec data-repo-id=R_kgDOGjnARg data-category=Announcements data-category-id=DIC_kwDOGjnARs4CAWru data-mapping=title data-reactions-enabled=1 data-emit-metadata=0 data-theme=dark data-lang=en crossorigin=anonymous async></script></article></main><footer class=footer><span>&copy; 2023 <a href=https://www.logsec.cloud>logsec</a></span>
+<span>Powered:
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

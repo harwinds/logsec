@@ -9,7 +9,17 @@
       <link>https://www.logsec.cloud/%3Clink%20or%20path%20of%20image%20for%20opengraph,%20twitter-cards%3E</link>
     </image>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 01 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 28 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://www.logsec.cloud/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible - Making API calls idempotent</title>
+      <link>https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/</link>
+      <pubDate>Sat, 28 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/</guid>
+      <description>This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
+We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions.</description>
+    </item>
+    
     <item>
       <title>Configure cross-account access from an EC2 Instance to an AWS CodeCommit repo using roles</title>
       <link>https://www.logsec.cloud/posts/cross-account-access-codecommit-repo/</link>
