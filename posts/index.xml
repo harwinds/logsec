@@ -17,7 +17,7 @@
       
       <guid>https://www.logsec.cloud/posts/ansible-making-api-calls-idempotent/</guid>
       <description>This article is about the Ansible URI module. In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
-We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatdely without any intervening actions.</description>
+We all know Ansible modules are ideompotent in nature which means performing an operation once is exactly the same as the result of performing it repeatedly without any intervening actions.</description>
     </item>
     
     <item>
