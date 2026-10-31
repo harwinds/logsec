@@ -1,11 +1,11 @@
 /* Site-specific styles. PaperMod loads every file in assets/css/extended/. */
 
-/* Credly badges on the About page: 3 per row, wrapping on small screens */
+/* Credly badges on the About page: 4 per row, wrapping on small screens */
 .cert-badges {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    max-width: 474px; /* 3 badges (3 x 150px + 2 gaps) */
+    max-width: 636px; /* 4 badges (4 x 150px + 3 gaps) */
     margin-bottom: 24px;
 }
 
