@@ -3,8 +3,17 @@ title: "Hi there \U0001F44B"
 ShowReadingTime: false
 ShowBreadCrumbs: false
 comments: false
+hidemeta: true
 ---
-I'm Harwinder Sandhu, a Cyber Security Consultant. Purpose of this site is to organize everything I have learned and want to learn in this field, and share those things with others. I welcome you to EXPLORE, and I hope you find something here worth your time.
+I'm Harwinder Sandhu. I lead a security automation team, and this site is where I write about what I'm building and learning.
+
+**What I work on**
+
+- Security automation and SOAR with Palo Alto Cortex XSOAR
+- Agentic AI for security operations
+- Detection content and threat hunting in Splunk and Elastic
+- AWS security: automated remediation with Lambda, built with Terraform and CloudFormation
+- Growing engineers through hiring, co-op programs and career development
 
 {{< rawhtml >}}
 <div class="social-icons">
