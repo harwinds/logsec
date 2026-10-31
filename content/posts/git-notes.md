@@ -1,6 +1,8 @@
 ---
 title: "Git Notes"
 date: 2020-05-15
+description: "Quick notes on what Git is, why it matters, and habits that keep you out of trouble: feature branches, good commit messages and protecting main."
+tags: [git, github, devops]
 ShowToc: true
 ---
 Git is a version control system. Basically, if someone changes a file (like opens a document and writes stuff in it, changes a line of code, or so on) it records the differences between the new version and the old version, and maintains a history. 
@@ -56,7 +58,9 @@ git clone https://github.com/myuser/my-git-repo.git
 - Everyone always uses master  
 - don't  
 - lazy/bad habit  
-- You aren't sole contributor  
+- You aren't the sole contributor  
+
+![Feature branches merging back into master](/images/2020_05_15_0.jpg)
 
 **Feature branches**  
 - Your 'Changeset' is a branch  
@@ -91,4 +95,4 @@ git push origin harwinder; #my branch
 - restrict master  
 - **.gitignore**: a collection of useful .gitignore templates <https://github.com/github/gitignore>   
 - **git-secrets**: Prevents you from committing secrets and credentials into git repositories <https://github.com/awslabs/git-secrets>   
-- after the fact **BFG Repo-Cleaner**:Removes large or troublesome blobs like git-filter-branch does, but faster <https://rtyley.github.io/bfg-repo-cleaner> 
+- after the fact **BFG Repo-Cleaner**: Removes large or troublesome blobs like git-filter-branch does, but faster <https://rtyley.github.io/bfg-repo-cleaner> 

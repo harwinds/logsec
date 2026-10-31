@@ -27,3 +27,15 @@ I'm Harwinder Sandhu, a Cyber Security Consultant. Purpose of this site is to or
 
 - Check Point Certified Security Expert (CCSE)
 - Check Point Certified Security Administrator (CCSA)
+
+### Past certifications
+
+- [AWS Certified Security – Specialty](https://www.credly.com/badges/ea7a35fe-2e25-4a3c-b391-b8b0bf0e0b1f/public_url)
+- [AWS Certified Solutions Architect – Professional](https://www.credly.com/badges/35c234f4-d904-4a6c-b490-922bae0d2afd/public_url)
+- [AWS Certified Solutions Architect – Associate](https://www.credly.com/badges/21f82f62-cb4a-4445-b93d-e923ff65f900/public_url)
+- [Splunk Enterprise Certified Admin](https://www.credly.com/badges/e78ac50e-5089-4a2c-aaf4-a6e5751b6a0b/public_url)
+- [Splunk Core Certified Power User](https://www.credly.com/badges/3740ec17-3b26-49c4-a208-0e6af9548ca7/public_url)
+- [Splunk Core Certified User](https://www.credly.com/badges/4611ecb1-3fb7-4bbd-8b01-6afbb979471c/public_url)
+- [CompTIA Security+](https://www.credly.com/badges/8801d51a-b4f9-4fcf-b3ff-cc2a557ece40/public_url)
+- [CompTIA A+](https://www.credly.com/badges/d946f68b-e6d0-4c89-a8c7-23c1e460be9f/public_url)
+- [Cisco CCNA Routing and Switching](https://www.credly.com/badges/c9162409-36c7-4e23-ad83-fd597c47f22c/public_url)

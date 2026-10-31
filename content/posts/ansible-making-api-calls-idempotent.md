@@ -1,16 +1,18 @@
 ---
 title: "Ansible - Making API calls idempotent"
 date: 2023-01-28
+description: "Use the Ansible URI module to call the Kibana Fleet API idempotently, choosing between POST and PUT based on which policies already exist."
+tags: [ansible, automation, elastic, kibana, api]
 ShowToc: false
 ---
 
-This article is about the Ansible [URI module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/uri_module.html). In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and making them idempotent.
+This article is about the Ansible [URI module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/uri_module.html). In the last couple of months, I have spent a lot of time around automation of Elasticsearch and wanted to share some useful information about how to use Ansible to interact with REST API endpoints and make them idempotent.
 
-We all know Ansible modules are [ideompotent](https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html#term-Idempotency) in nature which means performing an operation once is exactly the same as the result of performing it repeatedly without any intervening actions. However, sometimes making the tasks idempotent requires additional work, for instance, in URI modulde we have to decide when to use POST or PUT calls.
+We all know Ansible modules are [idempotent](https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html#term-Idempotency) in nature, which means performing an operation once has exactly the same result as performing it repeatedly without any intervening actions. However, sometimes making the tasks idempotent requires additional work. For instance, in the URI module we have to decide when to use POST or PUT calls.
 
 ### Difference between POST and PUT?
 
-Both `POST` and `PUT` are used to send data to a server to create/update a resource. The difference between POST and PUT is that PUT requests are idempotent. That is, calling the same PUT request multiple times will always produce the same result. In contrast, calling a POST request repeatedly have side effects of creating the same resource multiple times or failing with an error message that the resource already exists.
+Both `POST` and `PUT` are used to send data to a server to create/update a resource. The difference between POST and PUT is that PUT requests are idempotent. That is, calling the same PUT request multiple times will always produce the same result. In contrast, calling a POST request repeatedly has side effects of creating the same resource multiple times or failing with an error message that the resource already exists.
 
 Let's start with the playbook:
 
@@ -23,7 +25,7 @@ Let's start with the playbook:
     - fleet
 ```
 
-Directory Stucture of the `fleet` role:
+Directory structure of the `fleet` role:
 
 ```
 fleet/
@@ -59,9 +61,9 @@ policies/elasticagent.json
 }
 ```
 
-Below are the List Policies related tasks under the `tasks` directory. We are making the `GET` call first to list the exisitng policies, so that later we can make a decisin based on the response of GET call, if we need to create a new policy or update an existing policy. For the new policies, we have created a new variable called `policies_to_create` based on the template files in the directory called policies. 
+Below are the List Policies related tasks under the `tasks` directory. We are making the `GET` call first to list the existing policies, so that later we can decide, based on the response of the GET call, whether we need to create a new policy or update an existing policy. For the new policies, we have created a new variable called `policies_to_create` based on the template files in the directory called policies. 
 
-Later, we ran a delta using the `difference` filter between the two two variables `policies_to_create` & `policies_to_update`. Result of this will the policies that we need to create. 
+Later, we ran a delta using the `difference` filter between the two variables `policies_to_create` & `policies_to_update`. The result is the list of policies that we need to create.
 
 More on difference filter: https://docs.ansible.com/ansible/devel/collections/ansible/builtin/difference_filter.html
 
@@ -190,11 +192,11 @@ Based on the two variables `policies_to_create` & `policies_to_update`, we group
 
 ```
 
-> Note: As we can see there are some repeated code between two blocks for module `set_fact`, I tried to move this code outside of the block to keep the code clean, but the variable value is still being updated when the tasks are being skipped. 
+> Note: As we can see, there is some repeated code between two blocks for module `set_fact`, I tried to move this code outside of the block to keep the code clean, but the variable value is still being updated when the tasks are being skipped. 
 
-Ansible documentation on [condtionals](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html) states "Ansible always registers something in a registered variable for every host, even on hosts where a task fails or Ansible skips a task because a condition is not met." 
+Ansible documentation on [conditionals](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html) states "Ansible always registers something in a registered variable for every host, even on hosts where a task fails or Ansible skips a task because a condition is not met." 
 
-Is this the best approach to make API calls idempotent, not sure. These are several things can be improved, but for now this is good enough for our use case. One of the short-coming is if a user creates a Fleet policy through Kibana console, and we run this role again, it will fail, as it will attempt to update the existing policy, but will not find the policy in the policies directory or in the code itself.
+Is this the best approach to make API calls idempotent? I'm not sure. There are several things that can be improved, but for now this is good enough for our use case. One of the shortcomings is that if a user creates a Fleet policy through Kibana console, and we run this role again, it will fail, as it will attempt to update the existing policy, but will not find the policy in the policies directory or in the code itself.
 
 Hope you find this post helpful.
 

@@ -1,12 +1,14 @@
 ---
 title: "Splunk Enterprise Certified Admin Notes"
 date: 2020-09-22
+description: "Study notes for the Splunk Enterprise Certified Admin (SPLK-1003) exam, organized by the exam blueprint with the docs and videos I used."
+tags: [splunk, certification, study-notes]
 ShowToc: true
 ---
 I passed my Splunk Enterprise Certified Admin `SPLK 1003` cert on September 11th, 2020. While I have been actively working with Splunk as part of my job,
-clearing the exam however requires a consistent and well planned effort. 
+clearing the exam still requires a consistent and well-planned effort. 
 
-All these points are taken from the exam blueprint: <https://www.splunk.com/pdfs/training/Splunk-Test-Blueprint-Admin-v.1.1.pdf> updated with either with Splunk documentation link I studied to prepare for that specific part or youtube video I found useful. Along with these I also bought Udemy Course 
+All these points are taken from the exam blueprint: <https://www.splunk.com/pdfs/training/Splunk-Test-Blueprint-Admin-v.1.1.pdf>, together with either the Splunk documentation I studied for that specific part or a YouTube video I found useful. Along with these, I also bought the Udemy course 
 [The Complete Splunk Enterprise Certified Admin Course 2020](https://www.udemy.com/share/102vGYBkUZeFxVRnQ=/)
 
 From the `Splunk Enterprise Certified Admin` documentation: <https://www.splunk.com/en_us/training/certification-track/splunk-enterprise-certified-admin/overview.html>, a Splunk Enterprise Certified Admin manages various components of Splunk Enterprise on a daily basis, including license management, indexers and search heads, configuration, monitoring, and getting data into Splunk. This certification demonstrates an individual's ability to support the day-to-day administration and health of a Splunk Enterprise environment.
@@ -32,13 +34,11 @@ YouTube: <https://youtu.be/a-_LHJU07VU>
     * Clustered indexers are known as peer nodes
 
 > Search Head
-*  Search head manage search requests from users
+*  Search heads manage search requests from users
 *  Distribute searches across indexers
 *  Consolidates the results from the indexers
 
-Universal Forwarders (Agents)
-
-> Heavy Forwarders
+> Universal Forwarders (Agents) and Heavy Forwarders
 *  Forwarders forward data from one Splunk component to another
 *  From a source system to an indexer or indexer cluster
 *  From a source system directly to a search head (SH)
@@ -56,14 +56,14 @@ Universal Forwarders (Agents)
 
 > Deployment Server
 *  Centralized configuration manager
-*  Manages deployments apps for clients
+*  Manages deployment apps for clients
 *  Configured through the forwarder management interface
 
 > Cluster Master:
 *  Manage index clusters
 *  Coordinates the activities within the cluster
 *  Manages data replication
-*  Manges buckets (storage) for the cluster
+*  Manages buckets (storage) for the cluster
 *  Handles updates for the indexer cluster
 
 > *Every Splunk component is built using Splunk Enterprise. It’s only a matter of configuration
@@ -203,5 +203,5 @@ Encoding
 - Mask or delete raw data as it is being indexed 
 - Override sourcetype or host based upon event values 
 - Route events to specific indexes based on event content 
-- Prevent unwanted events from being index
+- Prevent unwanted events from being indexed
 3. Use SEDCMD to modify raw data

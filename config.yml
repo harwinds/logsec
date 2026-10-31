@@ -16,9 +16,8 @@ params:
     env: production # to enable google analytics, opengraph, twitter-cards and schema.
     title: logsec
     description: "Thoughts and ramblings about cybersecurity in a cloudy world."
-    keywords: [Blog, Portfolio, logsec, aws, cybersecurity]
-    # author: ["Me", "You"] # multiple authors
-    images: ["<link or path of image for opengraph, twitter-cards>"]
+    keywords: [logsec, cybersecurity, cloud security, aws, splunk, elastic, detection engineering]
+    author: Harwinder Sandhu
     defaultTheme: auto # dark, light
     disableThemeToggle: false
     ShowReadingTime: true
@@ -37,11 +36,10 @@ params:
     assets:
         # disableHLJS: true # to disable highlight.js
         # disableFingerprinting: true
-        favicon: "<link / abs url>"
-        favicon16x16: "<link / abs url>"
-        favicon32x32: "<link / abs url>"
-        apple_touch_icon: "<link / abs url>"
-        safari_pinned_tab: "<link / abs url>"
+        favicon: "/favicon.svg"
+        favicon16x16: "/favicon.svg"
+        favicon32x32: "/favicon.svg"
+        safari_pinned_tab: "/favicon.svg"
 
     label:
         text: "logsec"
@@ -104,10 +102,14 @@ menu:
           name: about
           url: /pages/about
           weight: 20
+        - identifier: tags
+          name: tags
+          url: /tags/
+          weight: 25
         - identifier: search
           name: search
-          url: search/
-          weight: 20
+          url: /search/
+          weight: 30
 outputs:
     home:
         - HTML

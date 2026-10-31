@@ -1,12 +1,15 @@
 ---
 title: "Ingest AWS CloudTrail logs to Splunk"
 date: 2020-04-20
+description: "Build a Splunk lab on AWS with Terraform and ingest CloudTrail logs through S3 and SQS using the Splunk Add-on for AWS."
+tags: [aws, splunk, cloudtrail, terraform, sqs]
+ShowToc: true
 ---
-This blog post will walk you through setting up a Splunk environment on AWS for lab purposes using Splunk Enterprise Free 60-day trail. After 60 days you can convert to a perpetual free license or purchase a Splunk Enterprise license to continue using the expanded functionality designed for enterprise-scale deployments. There is an indexing limit of 500 MB/Day which will be more than enough for our demo purposes.
+This blog post will walk you through setting up a Splunk environment on AWS for lab purposes using the Splunk Enterprise Free 60-day trial. After 60 days you can convert to a perpetual free license or purchase a Splunk Enterprise license to continue using the expanded functionality designed for enterprise-scale deployments. There is an indexing limit of 500 MB/Day which will be more than enough for our demo purposes.
 
-![](/images/2020_04_20_0.png)
+![CloudTrail to S3 to SQS to Splunk architecture](/images/2020_04_20_0.png)
 
-There are multiple ways to accomplish this - using AWS Console, CLI or using CloudFormation. For our demo purposes, we will be using [Terraform by Hashicorp](https://www.terraform.io/). Terraform is a tool for building, changing, and versioning infrastrcuture safely and efficiently. 
+There are multiple ways to accomplish this - using the AWS Console, the CLI or CloudFormation. For our demo purposes, we will be using [Terraform by HashiCorp](https://www.terraform.io/). Terraform is a tool for building, changing, and versioning infrastructure safely and efficiently. 
 
 This article assumes you have some familiarity with Terraform already. 
 
@@ -69,7 +72,7 @@ resource "aws_iam_role_policy" "splunk_iam_policy" {
 }
 ```
 
-Example IAM policy which will cover the majority of access splunk should need within AWS. Policy containing permisisons for all inputs is available at [Splunk Docs](https://docs.splunk.com/Documentation/AddOns/released/AWS/ConfigureAWSpermissions)
+Example IAM policy which will cover the majority of access Splunk should need within AWS. A policy containing permissions for all inputs is available at [Splunk Docs](https://docs.splunk.com/Documentation/AddOns/released/AWS/ConfigureAWSpermissions)
 ```json
 {
   "Version": "2012-10-17",
@@ -285,8 +288,8 @@ output "sqs_arn" {
 
 ```
 
-### 7. Create an Amazon VPC for our Splunk Splunk Instance
-Please note this step is not mandatory, you can use the default VPC as well. In this step we will demonstate how to setup our
+### 7. Create an Amazon VPC for our Splunk Instance
+Please note this step is not mandatory, you can use the default VPC as well. In this step we will demonstrate how to set up our
 own VPC, a public subnet, an Internet Gateway along with a route table. 
 ```terraform
 # VPC
@@ -430,7 +433,7 @@ resource "aws_security_group" "splunk_sg" {
   vpc_id      = aws_vpc.splunk_vpc.id
 
   ingress {
-    description = "Splunk Port 8000 from Home Netowrk"
+    description = "Splunk Port 8000 from Home Network"
     from_port   = 8000
     to_port     = 8000
     protocol    = "tcp"
@@ -438,7 +441,7 @@ resource "aws_security_group" "splunk_sg" {
   }
 
   ingress {
-    description = "SSH from Home Netowrk"
+    description = "SSH from Home Network"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -469,8 +472,8 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 echo BEGIN
 sudo apt-get update
 sudo apt-get upgrade -y
-cd /tmp && wget -O splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb  
-'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.3&product=splunk&filename=splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb&wget=true'
+cd /tmp && wget -O splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb \
+  'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.3&product=splunk&filename=splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb&wget=true'
 cd /opt
 sudo dpkg -i /tmp/splunk-8.0.3-a6754d8441bf-linux-2.6-amd64.deb
 cd splunk/
@@ -493,21 +496,21 @@ It will be randomly generated as we used the option `--gen-and-print-passwd`
 
 Once the apps are installed, restart Splunk.
 
-### 11. Go to App: Splunk Add-on for AWS and go under the "Configuration" tab, you'll see Role Assigned to the Splunk instance will populate in a couple of seconds.
+### 11. Go to App: Splunk Add-on for AWS and open the "Configuration" tab. The role assigned to the Splunk instance will show up within a couple of seconds.
 
-![](/images/2020_04_20_1.png)
+![Splunk Add-on for AWS showing the autodiscovered IAM role](/images/2020_04_20_1.png)
 
 ### 12. Go to "Inputs" tab
-Create a New Input selectng Data Type **CloudTrail** and Input Type **SQS-Based S3**
+Create a New Input selecting Data Type **CloudTrail** and Input Type **SQS-Based S3**
 
-![](/images/2020_04_20_2.png)
+![Create New Input: CloudTrail, SQS-Based S3](/images/2020_04_20_2.png)
 
 ### 13. Fill out the AWS Input Configuration details
 - Please note under the **AWS Account**, name of the role assigned to the Instance will automatically show up.
-- For the **SQS Queue Name**, you will see two SQS queues we created in earlier post. Please select the Event Notification Queue.
-- For the **Index**, either you can create a new index for CloudTrail logs or using existing one. 
+- For the **SQS Queue Name**, you will see the two SQS queues we created in an earlier step. Please select the Event Notification Queue.
+- For the **Index**, you can either create a new index for CloudTrail logs or use an existing one. 
 
-![](/images/2020_04_20_3.pn)
+![AWS Input Configuration for CloudTrail](/images/2020_04_20_3.png)
 
 ### 14. Go to `Search & Reporting` App
 Search for the CloudTrail logs using the SPL:
@@ -516,10 +519,10 @@ Search for the CloudTrail logs using the SPL:
 index=main sourcetype="aws:cloudtrail"
 | table _time eventSource eventName eventType errorCode awsRegion userIdentity.accountId
 ```
-![](/images/2020_04_20_4.png)
+![CloudTrail events in Splunk search results](/images/2020_04_20_4.png)
 
 ___
-**Summary**: In this post, we learnt how to setup up a Splunk environment on AWS for lab purposes. We used Terraform to setup the AWS environment and then manually configured Splunk to integrate the CloudTrail logs.
+**Summary**: In this post, we learned how to set up a Splunk environment on AWS for lab purposes. We used Terraform to setup the AWS environment and then manually configured Splunk to integrate the CloudTrail logs.
 
 ***
 

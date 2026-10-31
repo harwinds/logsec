@@ -1,7 +1,8 @@
-
 ---
 title: "Configure cross-account access from an EC2 Instance to an AWS CodeCommit repo using roles"
 date: 2022-09-01
+description: "Step-by-step IAM role setup that lets an EC2 instance in one AWS account clone and push to a CodeCommit repo in another account."
+tags: [aws, iam, codecommit, ec2, cross-account]
 ShowToc: true
 ---
 
@@ -12,7 +13,7 @@ This section is divided into three parts:
 - Part 2: Actions for the IAM Role in AccountB
 - Part 3: Configuration on EC2 Instance in AccountB
 
-![](/images/2022_09_05_cross_account_repo_access.svg#center)
+![Cross-account access from an EC2 instance in AccountB to a CodeCommit repo in AccountA](/images/2022_09_05_cross_account_repo_access.svg#center)
 
 ___
 ### Part 1: Actions for the IAM Role in AccountA
@@ -63,7 +64,7 @@ Create a new Role `CrossAccountRepoAccessRole` and attach the above policy to th
 
 ___
 ### Part 2: Actions for the IAM Role in AccountB
-To allow an EC2 Instance in AccountB to access a repository in AccountA, the AccountB administrator must create a IAM Role that can be attached to an EC2 Instance in AccountB. This role must be configured with a policy that allows the EC2 Instance to assume the role created in the AccountA. 
+To allow an EC2 Instance in AccountB to access a repository in AccountA, the AccountB administrator must create an IAM Role that can be attached to an EC2 Instance in AccountB. This role must be configured with a policy that allows the EC2 Instance to assume the role created in the AccountA. 
 
 The following sections provide steps and examples.
 
@@ -80,7 +81,7 @@ The following sections provide steps and examples.
 ```
 
 #### Step 2: Create a role for an AWS Service "EC2"
-Create a new Role `CrossAccountRepoAccessRole` for an AWS Service "EC2" (it will create the following trust relationship for the role to be assummed from an EC2 Instance ) and attach the above policy to that role. 
+Create a new Role `CrossAccountRepoAccessRole` for an AWS Service "EC2" (it will create the following trust relationship for the role to be assumed from an EC2 Instance) and attach the above policy to that role. 
 
 ```
 {
@@ -100,7 +101,7 @@ ___
 ### Part 3: Configuration on EC2 Instance in AccountB
 To access the repositories in AccountA, users in the AccountB must configure the EC2 Instance for repositories access. The following sections provide steps and examples.
 
-> Prerequisite: Please make sure `AWS CLI` and `git` package is installed.
+> Prerequisite: Please make sure the `AWS CLI` and `git` packages are installed.
 
 #### Step 1: Configure the AWS CLI and Git for an AccountB EC2 Instance to access the repositories in AccountA
 
@@ -113,10 +114,10 @@ credential_source = Ec2InstanceMetadata
 region = us-east-2
 ```
 
-You then want to confirm whether you've set your permissions correctly, you can do:
+To confirm that you've set your permissions correctly, run:
 
 ```
-aws --profile cross-account-role get-repository --repository-name ${REPO_NAME_IN_ACCOUNTA}`
+aws codecommit --profile cross-account-role get-repository --repository-name ${REPO_NAME_IN_ACCOUNTA}
 ```
 Once above is successful, you can configure the git client to use the credential-helper with the correct profile, in your ~/.gitconfig by running:
 
@@ -126,11 +127,11 @@ git config --global credential.UseHttpPath true
 ```
 
 ```
-git clone --branch ${BRANCH_NAME} ${REPO_NAME_IN_ACCOUNTA}`
+git clone --branch ${BRANCH_NAME} ${REPO_CLONE_URL_IN_ACCOUNTA}
 ```
 
-## Conlusion
-You can keep your code in CodeCommit Repositories in a central AWS Account and can access from different AWS Accounts using the IAM Roles. Please don't forget to follow the principle of least privileges while configuring above policies in Production environments.
+## Conclusion
+You can keep your code in CodeCommit Repositories in a central AWS Account and access it from different AWS Accounts using the IAM Roles. Please don't forget to follow the principle of least privileges while configuring above policies in Production environments.
 
 Hope you find this post helpful.
 

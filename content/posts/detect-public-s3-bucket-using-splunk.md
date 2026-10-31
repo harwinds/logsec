@@ -1,28 +1,30 @@
 ---
 title: "Detect Public S3 Bucket using Splunk"
 date: 2020-06-20
+description: "Splunk searches over CloudTrail logs that catch S3 buckets made public through the console, canned ACLs or grant flags, plus how to respond and prevent it."
+tags: [aws, s3, splunk, cloudtrail, detection]
 ShowToc: true
 ---
-In today's post, we will learn how to detect a public S3 bucket using Splunk. Later, we will see how we can respond to such incidents and even prevent it from happening in the first place. As you will see in the following examples, there are multiple ways to create a S3 bucket and make it public. Also, for this blog, I created some subdomains of [logsec.cloud](https://www.logsec.cloud) in [Route53](https://aws.amazon.com/route53/ "AWS Route 53 Documentation").
+In today's post, we will learn how to detect a public S3 bucket using Splunk. Later, we will see how we can respond to such incidents and even prevent them from happening in the first place. As you will see in the following examples, there are multiple ways to create an S3 bucket and make it public. Also, for this blog, I created some subdomains of [logsec.cloud](https://www.logsec.cloud) in [Route53](https://aws.amazon.com/route53/ "AWS Route 53 Documentation").
 
 
 ### **Scenario 1: Using the AWS Web Console**
-Create a S3 bucket and Go to "Permissions" - "Access Control List" - "Public Access" - "Everyone" - 
+Create an S3 bucket and go to "Permissions" - "Access Control List" - "Public Access" - "Everyone" - 
 Access to the objects -  
-- List Objects [\*]: Allows Gurantee to list the objects in the bucket  
-- Write Objects [\*]: Allows Gurantee to create and delete the objects in the bucket
+- List Objects [\*]: Allows Grantee to list the objects in the bucket  
+- Write Objects [\*]: Allows Grantee to create and delete the objects in the bucket
 
-![](/images/2020_06_19_1.jpg)
+![S3 console: public access settings for Everyone](/images/2020_06_19_1.jpg)
 
 Go to "Permissions" - "Access Control List" - "Public Access" - "Everyone" - 
 Access to this bucket's ACL - 
-- Read bucket permissions: Allow Gurantee to read the bucket ACL
-- Write bucket permissions: Allow Gurantee to edit the bucket ACL
+- Read bucket permissions: Allows Grantee to read the bucket ACL
+- Write bucket permissions: Allows Grantee to edit the bucket ACL
 
 To detect the first two scenarios, below Splunk search will work:
 
 ```
-index="*" sourcetype="aws:cloudtrail"eventName=CreateBucket OR eventName=PutBucketAcl OR eventName=PutObjectAcl 
+index="*" sourcetype="aws:cloudtrail" eventName=CreateBucket OR eventName=PutBucketAcl OR eventName=PutObjectAcl 
     requestParameters.AccessControlPolicy.AccessControlList.Grant{}.Grantee.URI="http://acs.amazonaws.com/groups/global/AllUsers" 
     OR requestParameters.AccessControlPolicy.AccessControlList.Grant{}.Grantee.URI="http://acs.amazonaws.com/groups/global/AuthenticatedUsers" 
 | rename requestParameters.AccessControlPolicy.Owner.DisplayName as bucketOwner  
@@ -42,18 +44,16 @@ Other Possible values are: [CANNED ACLs]
 
 Reference: [Create-Bucket](https://docs.aws.amazon.com/cli/latest/reference/s3api/create-bucket.html "AWS CLI Command Reference") 
 
-Testing the value: authenticated-read: Add the "Any AWS User" under the Public Access. Even though this option to add Authenticated User is now removed from the AWS Console, but you can still use it using the AWS CLI.  
+Testing the value authenticated-read: this adds "Any AWS User" under Public Access. Even though the option to add Authenticated Users has been removed from the AWS Console, you can still set it using the AWS CLI.  
 
-![](/images/2020_06_19_2.jpg)
+![S3 console: Any AWS User access](/images/2020_06_19_2.jpg)
 
-SPL:
+SPL to detect both public-read and public-read-write:
 ```
 "requestParameters.x-amz-acl{}"="public-*"
 ```
 
-To detect both values: 
-- public-read
-- public-read-write
+To test authenticated-read:
 
 ```bash
 aws s3api create-bucket --acl authenticated-read --bucket BUCKET_NAME --region us-east-1
@@ -78,7 +78,7 @@ aws s3api create-bucket --bucket BUCKET_NAME --region us-east-1 --grant-write-ac
 [--grant-full-control <value>]
 [--grant-read <value>]
 [--grant-read-acp <value>]
-[--grant-write <value>]- 
+[--grant-write <value>]
 [--grant-write-acp <value>]
 ```
 
@@ -91,7 +91,7 @@ SPL:
 ```
 eventName=CreateBucket requestParameters.x-amz-grant-read{}="uri=http://acs.amazonaws.com/groups/global/AllUsers"
 ```
-Combining all the posible values, SPL will look like:
+Combining all the possible values, SPL will look like:
 ```
 (requestParameters.x-amz-grant-full-control{}="*AllUsers" OR requestParameters.x-amz-grant-full-control{}="*AuthenticatedUsers")
 (requestParameters.x-amz-grant-read{}="*AllUsers" OR requestParameters.x-amz-grant-read{}="*AuthenticatedUsers") OR
@@ -100,7 +100,7 @@ Combining all the posible values, SPL will look like:
 (requestParameters.x-amz-grant-write-acp{}="*AllUsers" OR requestParameters.x-amz-grant-write-acp{}="*AuthenticatedUsers")
 ```
 ***
-Consolidatig all the above searches, to detect all possible scenarios, our complete search will be:
+Consolidating all the above searches, to detect all possible scenarios, our complete search will be:
 ```
 index="*" sourcetype="aws:cloudtrail" eventName=CreateBucket OR eventName="Put*Acl"  
 ("requestParameters.AccessControlPolicy.AccessControlList.Grant{}.Grantee.URI"="http://acs.amazonaws.com/groups/global/AllUsers") OR  
@@ -113,17 +113,17 @@ index="*" sourcetype="aws:cloudtrail" eventName=CreateBucket OR eventName="Put*A
 | stats values(time) values(eventSource) values(eventName) values(eventType) values(errorCode) values(requestParameters.bucketName) values(bucketOwner) values(sourceIPAddress) values(userIdentity.arn) values(userIdentity.type) values(awsRegion) values(userIdentity.accountId) values(index)
 ```
 
-If you are importing the S3 Server Access Logs in to Splunk, you can use `geostats` command to generate statistics to display geographic data and summarize the data on maps.
+If you are importing the S3 Server Access Logs into Splunk, you can use `geostats` command to generate statistics to display geographic data and summarize the data on maps.
 ```
 index="*" sourcetype="aws:s3:accesslogs" 
 | iplocation remote_ip
 | geostats count BY remote_ip
 ```
-![](/images/2020_06_19_3.jpg)
+![Splunk map of S3 access requests by location](/images/2020_06_19_3.jpg)
 
-**Known false positives:** There could be undesired alerts that can occur from this search, when someone intentionally creates a public bucket. In this case, consider adding speicific buckets to whitelist.
+**Known false positives:** This search can fire when someone intentionally creates a public bucket. In this case, consider adding specific buckets to an allowlist.
 
-**How to respond:** When this alert fires, ask yourself these questions. Is it still public? This is easy to detect, just search the logs for the bucket name and PutBucketACL, to see any subsequent ACL changes. Are the files public? and What is in it? These can be detected using S3 Access logs.
+**How to respond:** When this alert fires, ask yourself these questions. Is it still public? This is easy to check: search the logs for the bucket name and PutBucketAcl to see any subsequent ACL changes. Are the files public, and what is in them? These can be detected using S3 Access logs.
 
 **How to prevent:** Configure S3 Block Public Access on the AWS account level (applies to all S3 buckets in all regions). S3 Block Public Access provides four settings:
 

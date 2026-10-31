@@ -1,14 +1,16 @@
 ---
 title: "Upload CSV Data to Elasticsearch"
 date: 2021-12-28
+description: "Load a CSV of Log4j IOCs into Elasticsearch using a custom index, an ingest pipeline and a short bash loop, to detect outbound traffic to them."
+tags: [elastic, kibana, threat-intel, log4j, detection]
 ---
 
-Recently, I've been working on understanding and detecting [Log4j](https://logging.apache.org/log4j/2.x/) vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest read the blog series <https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html> by Nik Alleyne on his blog [securitynik.com](https://www.securitynik.com/). 
+Recently, I've been working on understanding and detecting the [Log4j](https://logging.apache.org/log4j/2.x/) vulnerability using Elasticsearch. If you want to know more about this vulnerability, I would suggest reading the blog series <https://www.securitynik.com/2021/12/beginning-log4-shell-understanding.html> by Nik Alleyne on his blog [securitynik.com](https://www.securitynik.com/). 
 
-To detect outbound traffic going to IOC's related to Log4j, needed to upload a csv data to Elasticsearch. To achieve that I followed the following steps:
+To detect outbound traffic going to IOCs related to Log4j, I needed to upload CSV data to Elasticsearch. To achieve that, I followed these steps:
 
 ### 1. First create a new index `logs-threat-intel`  
-Using the `Dev Tools` in Kibana, isse the Create Index API
+Using `Dev Tools` in Kibana, issue the Create Index API call
 ```
 PUT /logs-threat-intel
 {
@@ -87,7 +89,7 @@ PUT logs-threat-intel/_settings
 }
 ```
 
-### 4. Example on how to ingest new IOC's
+### 4. Example of how to ingest new IOCs
 
 ```
 POST logs-threat-intel/_doc/1
@@ -101,16 +103,16 @@ POST logs-threat-intel/_doc/2
     "ioc.url": "<URL>"
 }
 ```
-Replace the `IPv4/IPv6` and `URL` with respective IP or urls. Above technique works, but not quite scalable if we need ingest a big list of IOC's. As an example, we need to ingest [Log4j CSV](https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Sample%20Data/Feeds/Log4j_IOC_List.csv) downloaded from [Microsoft blog](https://www.microsoft.com/security/blog/2021/12/11/guidance-for-preventing-detecting-and-hunting-for-cve-2021-44228-log4j-2-exploitation/#IOC). To achieve that, wrote this 4 liner bash script:
+Replace `IPv4/IPv6` and `URL` with the respective IPs or URLs. This technique works, but it doesn't scale if we need to ingest a big list of IOCs. As an example, we need to ingest the [Log4j CSV](https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Sample%20Data/Feeds/Log4j_IOC_List.csv) downloaded from [Microsoft blog](https://www.microsoft.com/security/blog/2021/12/11/guidance-for-preventing-detecting-and-hunting-for-cve-2021-44228-log4j-2-exploitation/#IOC). To achieve that, I wrote this 4-line bash script:
 
 ```bash
 while read f1
 do        
    curl -k -X POST 'https://<ELASTICSEARCH_URL/ELASTICSEARCH_IP>:9200/logs-threat-intel/_doc/?pretty' -H "Content-Type: application/json" -u <USERNAME>:<PASSWORD> -d "{ \"ioc.ip\": \"$f1\", \"threatintel.indicator.signature\": \"log4j\"}"
-   done > /dev/null 2>&1 & < log4j-ioc.csv
+done < log4j-ioc.csv > /dev/null 2>&1 &
 ```
 
-Above script reads the contents of the file `log4j-ioc.csv` one at a time and ingest to elasticsearch under the index `logs-threat-intel`.
+The script reads the file `log4j-ioc.csv` one line at a time and ingests each IOC into Elasticsearch under the index `logs-threat-intel`.
 
 ### References:  
 - Create index API: <https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html>  
