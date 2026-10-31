@@ -28,6 +28,7 @@ I'm Harwinder Sandhu, a Cyber Security Consultant. Purpose of this site is to or
 {{< rawhtml >}}
 <!-- Credly badges, embedded directly (no Credly script needed) -->
 <div class="cert-badges about-page">
+<iframe src="https://www.credly.com/embedded_badge/cfce0c47-9e93-42f3-bdf8-edb021790c43" title="Claude Certified Architect – Foundations" width="150" height="270" frameborder="0" scrolling="no" loading="lazy"></iframe>
 <iframe src="https://www.credly.com/embedded_badge/ea7a35fe-2e25-4a3c-b391-b8b0bf0e0b1f" title="AWS Certified Security – Specialty" width="150" height="270" frameborder="0" scrolling="no" loading="lazy"></iframe>
 <iframe src="https://www.credly.com/embedded_badge/35c234f4-d904-4a6c-b490-922bae0d2afd" title="AWS Certified Solutions Architect – Professional" width="150" height="270" frameborder="0" scrolling="no" loading="lazy"></iframe>
 <iframe src="https://www.credly.com/embedded_badge/21f82f62-cb4a-4445-b93d-e923ff65f900" title="AWS Certified Solutions Architect – Associate" width="150" height="270" frameborder="0" scrolling="no" loading="lazy"></iframe>
