@@ -1,0 +1,26 @@
+/* Site-specific styles. PaperMod loads every file in assets/css/extended/. */
+
+/* Credly badges on the About page: 3 per row, wrapping on small screens */
+.cert-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 474px; /* 3 badges (3 x 150px + 2 gaps) */
+    margin-bottom: 24px;
+}
+
+.cert-badges iframe {
+    border: 0;
+    background: #fff;
+    border-radius: 6px;
+}
+
+/* Smaller headings on the About page only (it contains .about-page) */
+.post-single:has(.about-page) .post-title {
+    font-size: 30px;
+}
+
+.post-single:has(.about-page) .post-content h2 {
+    font-size: 24px;
+    margin: 24px auto 16px;
+}
