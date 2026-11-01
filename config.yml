@@ -1,6 +1,7 @@
 baseURL: "https://www.logsec.cloud"
 title: logsec
-paginate: 6
+pagination:
+    pagerSize: 6
 theme: "PaperMod"
 
 enableRobotsTXT: true
