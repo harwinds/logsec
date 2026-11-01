@@ -1,9 +1,11 @@
-# Builds the site with Hugo and publishes it to GitHub Pages
-# every time something is pushed to main.
+# Builds the site with Hugo. Pushes to main are also published to
+# GitHub Pages; pull requests are only test-built.
 name: Deploy site
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch: # allows a manual run from the Actions tab
 
@@ -12,13 +14,13 @@ permissions:
   pages: write
   id-token: write
 
-# Only one deploy runs at a time.
+# One run at a time per branch, so deploys to main never overlap.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 env:
-  HUGO_VERSION: 0.110.0 # keep in sync with the version used locally
+  HUGO_VERSION: 0.169.0 # keep in sync with the version used locally
 
 jobs:
   build:
@@ -43,6 +45,8 @@ jobs:
           path: ./public
 
   deploy:
+    # Publish only from main, never from a pull request.
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
